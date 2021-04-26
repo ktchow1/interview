@@ -303,4 +303,19 @@ auto longest_palindrome(std::string::iterator begin,
     return ans;
 }
 
+void tree_layer_average(const node<T>* root, std::vector<std::pair<T, std::uint32_t>>& result)
+{
+    if (!root) return;
 
+    std::queue<std::pair<std::uint32_t, const node<T>*>> q; q.push(std::make_pair(0UL, root));
+    while(!q.empty())
+    {
+        auto [layer, this_node] = q.top(); q.pop();
+        while(layer >= result.size()) result.push_back(std::make_pair(0,0));
+        result[layer].first += this_node->value;
+        result[layer].second += 1;
+        
+        if (this_node->lhs) q.push(std::make_pair(layer+1, this_node->lhs));
+        if (this_node->rhs) q.push(std::make_pair(layer+1, this_node->rhs));
+    }
+}
