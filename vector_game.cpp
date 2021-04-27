@@ -274,36 +274,103 @@ auto Q11_longest_non_duplicated_string(std::string::iterator begin,
 }
 
 // This method cannot solve cycle cases, like ABCBABCBA.
-auto Q12_longest_palindrome(std::string::iterator begin,
-                            std::string::iterator end)
+auto Q12_longest_palindrome_failed(std::string::iterator begin, std::string::iterator end)
 {
-    std::uint32_t sub0 = 1; //  odd palindrome : ABCBA
-    std::uint32_t sub1 = 0; // even palindrome : ABCCBA
+    std::uint32_t sub0 = 0; // even palindrome : ABCCBA
+    std::uint32_t sub1 = 1; //  odd palindrome : ABCBA
     std::uint32_t ans  = 1;
 
-    for(auto iter=begin+1; iter!=end; ++iter) // start with begin+1, avoid bound-checking in line A&B
+    // *** Update even *** //
+    if (std::distance(begin, end) >= 2)
     {
-        // *** Update odd *** //
-        if (*iter == *(iter-sub0-1)) // line A
+        for(auto iter=begin+1; iter!=end; ++iter) 
         {
-            sub0 = sub0 + 2;
+            if (*iter == *(iter-sub0-1)) 
+            {
+                sub0 = sub0 + 2;
+            }
+            else
+            {
+                sub0 = 0;
+            }
+            ans = std::max(ans, sub0);
         }
-        else
-        {
-            sub0 = 1;
-        }
+    }
 
-        // *** Update even *** //
-        if (*iter == *(iter-sub1-1)) // line B
+    // *** Update odd *** //
+    if (std::distance(begin, end) >= 3)
+    {
+        for(auto iter=begin+2; iter!=end; ++iter) 
         {
-            sub1 = sub1 + 2;
+            if (*iter == *(iter-sub1-1))
+            {
+                sub1 = sub1 + 2;
+            }
+            else
+            {
+                sub1 = 1;
+            }
+            ans = std::max(ans, sub1);
         }
-        else
-        {
-            sub1 = 0;
-        }
+    }
+    return ans;
+}
 
-        ans = std::max(ans, std::max(sub0, sub1));
+// This method can solve cycle cases, like ABCBABCBA.
+auto Q12_longest_palindrome(std::string::iterator begin, std::string::iterator end)
+{
+    std::uint32_t sub0 = 0; // even palindrome : ABCCBA (space between 2Cs is the centre)
+    std::uint32_t sub1 = 1; //  odd palindrome : ABCBA  (char C is the centre)
+    std::uint32_t ans  = 1;
+
+    // *** Update even *** //
+    if (std::distance(begin, end) >= 2)
+    {
+        for(auto iter=begin+1; iter!=end; ++iter) 
+        {
+            if (sub0 > 0 && *iter == *(iter-sub0-1)) 
+            {
+                sub0 = sub0 + 2;
+            }
+            else
+            {
+                sub0 = 0;
+                if (*iter == *(iter-sub0-1))
+                {
+                    sub0 = sub0 + 2; // for handling cyclic case
+                }
+                else
+                {
+                    sub0 = 0;
+                }
+            }
+            ans = std::max(ans, sub0);
+        }
+    }
+
+    // *** Update odd *** //
+    if (std::distance(begin, end) >= 3)
+    {
+        for(auto iter=begin+2; iter!=end; ++iter) 
+        {
+            if (sub1 > 1 && *iter == *(iter-sub1-1))
+            {
+                sub1 = sub1 + 2;
+            }
+            else 
+            {
+                sub1 = 1;
+                if (*iter == *(iter-sub1-1))
+                {
+                    sub1 = sub1 + 2; // for handling cyclic case
+                }
+                else
+                {
+                    sub1 = 1;
+                }
+            }
+            ans = std::max(ans, sub1);
+        }
     }
     return ans;
 }
@@ -371,36 +438,195 @@ void Q16_tree_layer_average(const node<T>* root, std::vector<std::pair<T, std::u
 template<typename ITER>
 auto Q17_order_statistics(ITER begin, ITER end, std::uint32_t K)
 {
-    auto front = begin;
     auto last = end-1;
-
-    while(front!=last)
+    while(begin!=last)
     {
         // step 1 : quick-sort-iteration
-    
+        auto i = begin;
+        auto j = last;
+        while(i!=j)
+        {
+            if (*i <= *j) --j;
+            else
+            {
+                auto temp = *i;
+                *i = *(i+1);
+                *(i+1) = *j;
+                *j = temp;
+                ++i;
+            }
+        }
     
         // step 2 : bisection
+        if (std::distance(begin, i)==k)
+        {
+            return 
+        }
+        else if (std::distance(begin,i) < k)
+        {   
+            begin = i+1;
+        }
+        else 
+        {
+            last = i-1;
+        }
     }
-    return *front;
+    return *begin;
 }
 
-template<typename ITER>
-std::uint32_t Q18_num_of_bribes(ITER begin, ITER end)
+// ******************* //
+// *** Slow method *** //
+// ******************* //
+// n      is old position 
+// vec[n] is new position
+// ********************** //
+std::uint32_t Q18_num_of_bribes(const std::vector<std::uint32_t>& vec)
 {
-
+    std::uint32_t num_bribes = 0;
+    for(std::uint32_t n=0; n!=vec.size(); ++n)
+    {
+        for(std::uint32_t m=n+1; m!=vec.size(); ++m) // m (originally before n) falls behind n
+        {
+            if (vec[m] < vec[n]) ++num_bribes; // original order
+        }
+    }
+    return num_bribes;
 }
 
-template<typename ITER>
-std::uint32_t Q19_num_of_sorted_element(ITER begin, ITER end)
+// **************************************************** //
+// *** Fast method (reduce the range of inner loop) *** //
+// **************************************************** //
+std::uint32_t Q18_num_of_bribes(const std::vector<std::uint32_t>& vec)
 {
+    std::uint32_t num_bribes = 0;
+    for(std::uint32_t n=0; n!=vec.size(); ++n)
+    {
+        for(std::uint32_t m=vec[n]-2; m!=n; ++m) // m (originally after n) overtakes n 
+        {
+            if (vec[m] > vec[n]) ++num_bribes; // original order
+        }
+    }
+    return num_bribes;
 }
 
-template<typename ITER>
-auto Q20_biggest_rectangle(ITER begin, ITER end)
+// ************************ //
+// *** Store y in stack *** //
+// ************************ //
+std::uint32_t Q19_num_of_sorted_element(const std::vector<std::uint32_t>& vec)
 {
+    // *** LHS *** //
+    std::stack<std::uint32_t> s0;
+    std::uint32_t lhs_min = vec.size(); 
+    for(std::uint32_t n=0; n!=vec.size(); ++n)
+    {
+        // correct order 
+        if (s0.empty || vec[n] >= s.top())
+        {
+            s0.push(vec[n]);
+        }
+        // incorrect order
+        else
+        {
+            while(!s0.empty() && vec[n] < s0.top()) s0.pop();
+            if (lhs_min > s0.size()) 
+                lhs_min = s0.size();
+        }
+    }
+
+    // *** RHS *** //
+    std::stack<std::uint32_t> s1;
+    std::uint32_t rhs_min = vec.size(); 
+    for(std::uint32_t n=0; n!=vec.size(); ++n)
+    {
+        // correct order 
+        if (s1.empty || vec[vec.size()-n-1] <= s1.top())
+        {
+            s1.push(vec[vec.size()-n-1]);
+        }
+        // incorrect order
+        else
+        {
+            while(!s1.empty() && vec[vec.size()-n-1] > s1.top()) s1.pop();
+            if (rhs_min > s1.size()) 
+                rhs_min = s1.size();
+        }
+    }
+
+    return lhs_min + rhs_min;
 }
 
-template<typename ITER>
-auto Q21_muddy_puddle(ITER begin, ITER end)
+// ******************************* //
+// *** Store both x&y in stack *** //
+// ******************************* //
+// Same pattern in Q19 & Q20 :
+// for()
+// {
+//     if () {           }
+//     else  { while ... }
+// }
+// ******************************* //
+std::uint32_t Q20_biggest_rectangle(const std::vector<std::uint32_t>& vec)
 {
+    std::stack<std::pair<std::uint32_t, std::uint32_t>> s;
+    std::uint32_t sub;
+    std::uint32_t ans = 0;
+
+    for(std::uint32_t n=0; n!=vec.size(); ++n)
+    {
+        if (s.empty() || vec[n] > s.top()) // no equality here ...
+        {
+            s.push(std::make_pair(n,vec[n]));
+            sub = vec[n];
+        }
+        else
+        {
+            while(!s.empty() && vec[n] < s.top().second) s.pop(); // no equality here too ... 
+            if (s.empty())
+            {
+                sub = vec[n];
+            }
+            else
+            {
+                // The following are equivalent.
+                sub =         s.top().second          * (n-s.top().first+1); 
+            //  sub = std:min(s.top().second, vec[n]) * (n-s.top().first+1);
+            }
+        }
+        ans = std::max(ans, sub);
+    }
+    return ans;
 }
+
+std::uint32_t Q21_muddy_puddle(const std::vector<std::uint32_t>& vec)
+{
+    std::vector<std::uint32_t> lhs_profile;
+    std::vector<std::uint32_t> rhs_profile;
+
+    // *** LHS profile *** //
+    std::uint32_t max = std::numeric_limits<std::uint32_t>::min();
+    for(std::uint32_t n=0; n!=vec.size(); ++n)
+    {
+        if (max < vec[n])
+            max = vec[n];
+        lhs_profile.push_back(max);
+    }
+
+    // *** RHS profile *** //
+    max = std::numeric_limits<std::uint32_t>::min();
+    for(std::uint32_t n=0; n!=vec.size(); ++n)
+    {
+        if (max < vec[vec.size()-n-1])
+            max = vec[vec.size()-n-1];
+        rhs_profile.push_back(max);
+    }
+
+    // *** Total volume *** //
+    std::uint32_t vol = 0;
+    for(std::uint32_t n=0; n!=vec.size(); ++n)
+    {
+        auto temp = std::min(lhs_profile[n], rhs_profile[n]);
+        if (temp > vec[n]) vol += temp - vec[n];
+    }
+}
+
+

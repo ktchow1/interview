@@ -77,7 +77,6 @@ void merge_sort(ITER begin, ITER end)
     merge_sort(aux.begin(), aux.end());
     merge_sort(mid, end);
     std::merge(aux.begin(), aux.end(), mid, end, begin);
-
 }
 
 template<typename ITER, typename BACK_ITER>
