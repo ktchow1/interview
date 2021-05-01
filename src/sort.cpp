@@ -1,3 +1,5 @@
+#include<algorithm>
+
 // ******************************** //
 // *** This file is not tested. *** //
 // ******************************** //
@@ -9,7 +11,7 @@ void select_sort(ITER begin, ITER end)
         ITER win = i;
         for(ITER j=i+1; j!=end; ++j) 
         {
-            if (*j < *WIN) WIN = j;
+            if (*j < *win) win = j;
         }
         std::swap(*i, *win);
     }

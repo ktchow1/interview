@@ -1,3 +1,12 @@
+#include<iostream>
+#include<vector>
+#include<queue>
+#include<stack>
+#include<set>
+#include<map>
+#include<unordered_set>
+#include<unordered_map>
+
 // ******************************** //
 // *** This file is not tested. *** //
 // ******************************** //
@@ -220,10 +229,11 @@ auto Q10_count_lt_target_subseq_sum_of_pos_numbers(std::vector<uint32_t>::iterat
                                                    std::vector<uint32_t>::iterator end,
                                                    std::uint32_t target)
 {
-    std::map<T, ITER> idx; idx[0] = begin; // index is the "end" of subseq starting with element 0 having specific sum
+    using ITER = std::vector<std::uint32_t>::iterator;
+    std::map<std::uint32_t, ITER> idx; idx[0] = begin; // index is the "end" of subseq starting with element 0 having specific sum
     std::uint32_t ans = 0;
 
-    T sum = 0;
+    std::uint32_t sum = 0;
     for(auto iter=begin; iter!=end; ++iter)    
     {
         // *** Update sum *** //
@@ -383,18 +393,20 @@ auto Q13_set_of_subset(const std::string& str, std::set<std::string>& output)
     Q13_set_of_subset(str.substr(1), temp);
     for(const auto& x:temp)
     {
+        std::string y(1, str[0]);
+        y.append(x);
+
         output.insert(x);
-        x.insert(0,str[0]);
-        output.insert(x);
+        output.insert(y);
     }
-    output.insert(std::string(1. str[0]));
+    output.insert(std::string(1, str[0]));
 }
 
 auto Q14_nearest_target_pair_sum(const std::vector<std::uint32_t>& vx, // suppose to be sorted
                                  const std::vector<std::uint32_t>& vy, // suppose to be sorted
                                  std::uint32_t target)
 {
-    std::uint32_t x = s0.size()-1; 
+    std::uint32_t x = vx.size()-1; 
     std::uint32_t y = 0;          
     std::uint32_t win_x = x;
     std::uint32_t win_y = y;
@@ -404,7 +416,7 @@ auto Q14_nearest_target_pair_sum(const std::vector<std::uint32_t>& vx, // suppos
         auto sum = vx[x] + vy[x];
 
         // step 1 : minimization
-        if (auto tmp = abs(sum - targe); tmp < min_diff)
+        if (auto tmp = abs(sum - target); tmp < min_diff)
         {
             min_diff = tmp;
             win_x = x;
@@ -418,14 +430,21 @@ auto Q14_nearest_target_pair_sum(const std::vector<std::uint32_t>& vx, // suppos
     return std::make_pair(vx[win_x], vy[win_y]);
 }
 
-void Q16_tree_layer_average(const node<T>* root, std::vector<std::pair<T, std::uint32_t>>& result)
+template<typename T> struct node
+{
+    T value;
+    node<T>* lhs;
+    node<T>* rhs;
+};
+
+void Q16_tree_layer_average(const node<std::uint32_t>* root, std::vector<std::pair<std::uint32_t, std::uint32_t>>& result)
 {
     if (!root) return;
 
-    std::queue<std::pair<std::uint32_t, const node<T>*>> q; q.push(std::make_pair(0UL, root));
+    std::queue<std::pair<std::uint32_t, const node<std::uint32_t>*>> q; q.push(std::make_pair(0UL, root));
     while(!q.empty())
     {
-        auto [layer, this_node] = q.top(); q.pop();
+        auto [layer, this_node] = q.front(); q.pop();
         while(layer >= result.size()) result.push_back(std::make_pair(0,0));
         result[layer].first += this_node->value;
         result[layer].second += 1;
@@ -436,7 +455,7 @@ void Q16_tree_layer_average(const node<T>* root, std::vector<std::pair<T, std::u
 }
 
 template<typename ITER>
-auto Q17_order_statistics(ITER begin, ITER end, std::uint32_t K)
+auto Q17_order_statistics(ITER begin, ITER end, std::uint32_t k)
 {
     auto last = end-1;
     while(begin!=last)
@@ -460,7 +479,7 @@ auto Q17_order_statistics(ITER begin, ITER end, std::uint32_t K)
         // step 2 : bisection
         if (std::distance(begin, i)==k)
         {
-            return 
+            return *i;
         }
         else if (std::distance(begin,i) < k)
         {   
@@ -480,7 +499,7 @@ auto Q17_order_statistics(ITER begin, ITER end, std::uint32_t K)
 // n      is old position 
 // vec[n] is new position
 // ********************** //
-std::uint32_t Q18_num_of_bribes(const std::vector<std::uint32_t>& vec)
+std::uint32_t Q18_num_of_bribes_slow(const std::vector<std::uint32_t>& vec)
 {
     std::uint32_t num_bribes = 0;
     for(std::uint32_t n=0; n!=vec.size(); ++n)
@@ -496,7 +515,7 @@ std::uint32_t Q18_num_of_bribes(const std::vector<std::uint32_t>& vec)
 // **************************************************** //
 // *** Fast method (reduce the range of inner loop) *** //
 // **************************************************** //
-std::uint32_t Q18_num_of_bribes(const std::vector<std::uint32_t>& vec)
+std::uint32_t Q18_num_of_bribes_fast(const std::vector<std::uint32_t>& vec)
 {
     std::uint32_t num_bribes = 0;
     for(std::uint32_t n=0; n!=vec.size(); ++n)
@@ -520,7 +539,7 @@ std::uint32_t Q19_num_of_sorted_element(const std::vector<std::uint32_t>& vec)
     for(std::uint32_t n=0; n!=vec.size(); ++n)
     {
         // correct order 
-        if (s0.empty || vec[n] >= s.top())
+        if (s0.empty() || vec[n] >= s0.top())
         {
             s0.push(vec[n]);
         }
@@ -539,7 +558,7 @@ std::uint32_t Q19_num_of_sorted_element(const std::vector<std::uint32_t>& vec)
     for(std::uint32_t n=0; n!=vec.size(); ++n)
     {
         // correct order 
-        if (s1.empty || vec[vec.size()-n-1] <= s1.top())
+        if (s1.empty() || vec[vec.size()-n-1] <= s1.top())
         {
             s1.push(vec[vec.size()-n-1]);
         }
@@ -573,7 +592,7 @@ std::uint32_t Q20_biggest_rectangle(const std::vector<std::uint32_t>& vec)
 
     for(std::uint32_t n=0; n!=vec.size(); ++n)
     {
-        if (s.empty() || vec[n] > s.top()) // no equality here ...
+        if (s.empty() || vec[n] > s.top().second) // no equality here ...
         {
             s.push(std::make_pair(n,vec[n]));
             sub = vec[n];
@@ -627,6 +646,7 @@ std::uint32_t Q21_muddy_puddle(const std::vector<std::uint32_t>& vec)
         auto temp = std::min(lhs_profile[n], rhs_profile[n]);
         if (temp > vec[n]) vol += temp - vec[n];
     }
+    return vol;
 }
 
 

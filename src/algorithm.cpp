@@ -1,3 +1,5 @@
+#include<iostream>
+#include<vector>
 
 std::pair<std::uint64_t, std::uint64_t> divide(std::uint64_t x, std::uint64_t y) // return x/y
 {

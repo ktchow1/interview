@@ -1,3 +1,10 @@
+#include<iostream>
+#include<set>
+#include<map>
+#include<unordered_set>
+#include<unordered_map>
+#include<optional>
+
 // Three loops :
 // 1. time domain
 // 2. state domain (x = value of coins / weight of items / time of tasks)
@@ -10,13 +17,13 @@ std::optional<std::uint32_t> coin_change(const std::set<std::uint32_t>& coins, s
 
     while(true)        
     {
-        std::set<std::uint32_t> state1;
+        std::unordered_set<std::uint32_t> state1;
         for(const auto& x:state0)
         {
             for(const auto& dx:coins)
             {
                 auto temp = x+dx;
-                if (temp <= target) state1.push(temp);
+                if (temp <= target) state1.insert(temp);
             }
         }
 
@@ -51,12 +58,12 @@ struct item
 
 std::optional<std::uint32_t> knapsack(const std::set<item>& items, std::uint32_t limit)
 {
-    std::unordered_map<std::uint32_t, std::uint32_t> objective; // total-weight vs total-value
-    std::unordered_set<std::uint32_t, std::uint32_t> state0;
+    std::map<std::uint32_t, std::uint32_t> objective; // total-weight vs total-value
+    std::unordered_map<std::uint32_t, std::uint32_t> state0;
     
     while(true)
     {
-        std::unordered_set<std::uint32_t, std::uint32_t> state1;
+        std::unordered_map<std::uint32_t, std::uint32_t> state1;
         for(const auto& x:state0)
         {
             for(const auto& dx:items)
@@ -83,7 +90,7 @@ std::optional<std::uint32_t> knapsack(const std::set<item>& items, std::uint32_t
         // *** Exit condition *** //
         if (state1.empty())
         {
-            auto iter = objective.upper_bound(limit)
+            auto iter = objective.upper_bound(limit);
             if (iter != objective.end())
             {
                 return std::make_optional(iter->second);
@@ -98,11 +105,12 @@ std::optional<std::uint32_t> knapsack(const std::set<item>& items, std::uint32_t
 struct job 
 {
     std::uint32_t load;     // x
-    std::uint32_t profit    // y
+    std::uint32_t profit;   // y
     std::uint32_t deadline; // constraint
 };
 
 // Each job should be done once or never.
 std::uint32_t job_schedule(const std::set<job>& jobs)
 {
+    return 0;
 }
