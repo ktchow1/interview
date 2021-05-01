@@ -14,11 +14,11 @@ std::pair<std::uint64_t, std::uint64_t> divide(std::uint64_t x, std::uint64_t y)
     std::uint64_t N = 1;
     while(y2 <= x)
     {
-        y2 << 1;
-        N << 1;
+        y2 = y2 << 1; // Note : bit-shift does not update the original value unless you assign explicitly
+        N = N << 1;
     }
-    y2 >> 1;  // when x=1, then y2=0, N=0, is that ok?
-    N >> 1;
+    y2 = y2 >> 1;  
+    N = N >> 1;
 
     // Main loop
     std::uint64_t quotient = 0;
@@ -29,8 +29,8 @@ std::pair<std::uint64_t, std::uint64_t> divide(std::uint64_t x, std::uint64_t y)
             x -= y2;
             quotient += N;
         }
-        y2 >> 1;
-        N >> 1;
+        y2 = y2 >> 1;
+        N = N >> 1;
     }
     return std::make_pair(quotient, x);
 }
@@ -49,7 +49,7 @@ std::uint64_t power(std::uint64_t x, std::uint64_t y) // return x^y
         }
 
         // Next iteration
-        y >> 1;
+        y = y >> 1;
         x2 = x2 * x2;
     }
     return z;
