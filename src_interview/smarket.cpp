@@ -229,7 +229,7 @@ void test_smarket3_point_puzzle()
     std::uint32_t count_success = 0;
     std::uint32_t count_done = 0;
     std::uint32_t T = 1000; 
-    std::uint32_t N = 30; 
+    std::uint32_t N = 40; 
 
     for(std::uint32_t t=0; t!=T; ++t)
     {
