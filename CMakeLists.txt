@@ -31,7 +31,7 @@ include_directories(
 ### (2) source ###
 ##################
 file(GLOB SOURCES
-     "src/*.cpp"
+     "src_hackerank/*.cpp"
      "src_interview/*.cpp"
 )
 add_executable(Test ${SOURCES})       # for building executable

@@ -193,7 +193,7 @@ std::uint32_t point_puzzle1(std::vector<std::uint32_t>& vec)
 // *********************** //
 // *** Test programmes *** //
 // *********************** //
-void test_smarket2_LT_subseq_product()
+void test_smarket_subseq_product()
 {
     std::uint32_t count_success = 0;
     std::uint32_t count_done = 0;
@@ -224,7 +224,7 @@ void test_smarket2_LT_subseq_product()
     }
 }
 
-void test_smarket3_point_puzzle()
+void test_smarket_point_puzzle()
 {
     std::uint32_t count_success = 0;
     std::uint32_t count_done = 0;

@@ -5,7 +5,7 @@
 // ******************************** //
 template<typename ITER>
 void select_sort(ITER begin, ITER end)
-{
+{ 
     for(ITER i=begin; i!=end; ++i)
     {
         ITER win = i;
