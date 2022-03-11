@@ -1,3 +1,10 @@
+#include<iostream>
+#include<string>
+#include<vector>
+#include<array>
+#include<tuple>
+#include<unordered_map>
+
 enum class State : std::uint32_t
 {
     Open,
@@ -184,7 +191,7 @@ private:
     std::unordered_map<std::string, State> states;
 };
 
-int main() 
+void test_epoch_state() 
 {
     Parser parser(std::cin);
     StateManager manager;
@@ -196,5 +203,4 @@ int main()
             manager.new_tick(tick.second);   
         }
     }    
-    return 0;
 }

@@ -31,8 +31,9 @@ include_directories(
 ### (2) source ###
 ##################
 file(GLOB SOURCES
-     "src_hackerank/*.cpp"
      "src_interview/*.cpp"
+#    "src_preparation0/*.cpp"
+#    "src_preparation1/*.cpp"
 )
 add_executable(Test ${SOURCES})       # for building executable
 # add_library(Test STATIC ${SOURCES}) # for building static lib .a

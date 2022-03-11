@@ -309,20 +309,17 @@ auto longest_palindrome(std::string::iterator begin, std::string::iterator end)
     {
         for(auto iter=begin+1; iter!=end; ++iter) 
         {
-            if (sub0 > 0 && *iter == *(iter-sub0-1)) 
+            if (*iter == *(iter-sub0-1)) 
             {
                 sub0 = sub0 + 2;
             }
             else
             {
                 sub0 = 0;
+                // for handling cyclic case
                 if (*iter == *(iter-sub0-1))
                 {
-                    sub0 = sub0 + 2; // for handling cyclic case
-                }
-                else
-                {
-                    sub0 = 0;
+                    sub0 = sub0 + 2; 
                 }
             }
             ans = std::max(ans, sub0);
@@ -334,20 +331,17 @@ auto longest_palindrome(std::string::iterator begin, std::string::iterator end)
     {
         for(auto iter=begin+2; iter!=end; ++iter) 
         {
-            if (sub1 > 1 && *iter == *(iter-sub1-1))
+            if (*iter == *(iter-sub1-1))
             {
                 sub1 = sub1 + 2;
             }
             else 
             {
                 sub1 = 1;
+                // for handling cyclic case
                 if (*iter == *(iter-sub1-1))
                 {
-                    sub1 = sub1 + 2; // for handling cyclic case
-                }
-                else
-                {
-                    sub1 = 1;
+                    sub1 = sub1 + 2; 
                 }
             }
             ans = std::max(ans, sub1);
