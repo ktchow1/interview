@@ -5,6 +5,7 @@
 #include<tuple>
 #include<unordered_map>
 
+namespace interview {
 enum class State : std::uint32_t
 {
     Open,
@@ -203,4 +204,5 @@ void test_epoch_state()
             manager.new_tick(tick.second);   
         }
     }    
+}
 }

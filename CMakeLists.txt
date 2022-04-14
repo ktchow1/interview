@@ -31,10 +31,11 @@ include_directories(
 ### (2) source ###
 ##################
 file(GLOB SOURCES
-     "src_interview/*.cpp"
+     "src/*.cpp"
 #    "src_00_algorithm/*.cpp"
 #    "src_01_dynprog_vec/*.cpp"
 #    "src_02_dynprog/*.cpp"
+     "src_interview/*.cpp"
 )
 add_executable(Test ${SOURCES})       # for building executable
 # add_library(Test STATIC ${SOURCES}) # for building static lib .a

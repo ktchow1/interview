@@ -5,6 +5,7 @@
 #include<unordered_map>
 #include<math.h>
 
+namespace interview {
 // ************************************************* //
 // *** Less than target subseq product in O(N^3) *** //
 // ************************************************* //
@@ -251,8 +252,5 @@ void test_smarket_point_puzzle()
                                 << count_done;
     }
 }
-
-
-
-
+}
 

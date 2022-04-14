@@ -2,6 +2,7 @@
 #include<string>
 #include<vector>
 
+namespace interview {
 template<typename T, int SZY, int SZX> struct matrix
 {
 	enum direction { L2R, DOWN, R2L, UP };
@@ -71,7 +72,6 @@ template<typename T, int SZY, int SZX> struct matrix
 	T* ptr;
 };
 
-
 void test_citadel_matrix_spiral()
 {
 	// Test all combinations : 1x1, 2x2, 3x3, 1x100 ...
@@ -85,4 +85,4 @@ void test_citadel_matrix_spiral()
 	for(auto& x : vec) std::cout << x << " ";
 	std::cout << "\n\n";
 }
-
+}

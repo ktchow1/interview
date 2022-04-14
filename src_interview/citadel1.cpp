@@ -3,7 +3,8 @@
 #include<list>
 #include<set>
 #include<iterator>
-    
+
+namespace interview {
 template<typename OUT_ITER> 
 void gen_sorted_data(OUT_ITER begin, std::uint32_t N)
 {
@@ -190,5 +191,5 @@ void test_citadel_K_merge()
     }
     std::cout << "\ncorrect_count = " << correct_count << "/" << N;
     std::cout << "\n\n";
-
+}
 }
