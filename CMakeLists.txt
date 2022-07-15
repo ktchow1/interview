@@ -32,7 +32,7 @@ include_directories(
 ##################
 file(GLOB SOURCES
      "src/*.cpp"
-#    "src_00_algorithm/*.cpp"
+     "src_00_algorithm/*.cpp"
 #    "src_01_dynprog_vec/*.cpp"
 #    "src_02_dynprog/*.cpp"
      "src_interview/*.cpp"
