@@ -3,10 +3,14 @@
 
 
 void test_arithmetics();
+void test_tree();
+void test_tree_variant();
 
 int main()
 {
-    test_arithmetics();
+//  test_arithmetics();
+//  test_tree();
+    test_tree_variant();
 
 
 

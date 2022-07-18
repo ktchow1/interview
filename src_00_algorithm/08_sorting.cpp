@@ -2,14 +2,15 @@
 #include<vector>
 
 
-//               fast    medium  slow    inplace  
-// -----------------------------------------------------------
-// select sort   O(N^2)  O(N^2)  O(N^2)
-// bubble sort   O(N^2)  O(N^2)  O(N^2)
-// insert sort   O(N)    O(N^2)  O(N^2)
-// quick sort    O(lnN)  O(lnN)  O(N^2)
-// merge sort    O(lnN)  O(lnN)  O(N^2)
-// heap sort     O(lnN)  O(lnN)
+//               fast    medium  slow    inplace  iter stable
+// ----------------------------------------------------------
+// select sort   O(N^2)  O(N^2)  O(N^2)  yes   forward     no
+// bubble sort   O(N)    O(N^2)  O(N^2)  yes  bidirect    yes
+// insert sort   O(N)    O(N^2)  O(N^2)  yes  bidirect    yes
+// quick sort    O(lnN)  O(lnN)  O(N^2)  yes  bidirect     no
+// merge sort    O(lnN)  O(lnN)  O(lnN)   no    random    yes
+// heap sort     O(lnN)  O(lnN)  O(lnN)  yes    random     no
+// ----------------------------------------------------------
 
 template<typename ITER> void select_sort(ITER& begin, ITER& end)
 {

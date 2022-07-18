@@ -115,7 +115,7 @@ public:
         head = prev_node;
     }
 
-private:
+// private:
     node<T>* head;
 };
 
@@ -177,14 +177,15 @@ public:
         std::swap(head, tail);
     }
 
-private:
+// private:
     node<T>* head;
     node<T>* tail;
 };
 
-node<T>* last_n_node(list<T>& x, std::uint32_t N)
+template<typename T>
+node<T>* last_n_node(singly_list<T>& list, std::uint32_t N)
 {
-    node<T>* this_node = list.head();
+    node<T>* this_node = list.head;
     node<T>* next_node = this_node->next;
     for(std::uint32_t n=0; n!=N; ++n)
     {
