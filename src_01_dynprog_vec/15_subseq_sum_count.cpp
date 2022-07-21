@@ -43,7 +43,6 @@ std::uint32_t count_target_divisible_subseq_sum(const std::vector<std::uint32_t>
     return ans;
 }
 
-
 // Find m such that : 
 //   
 //      cum - cum[m] < target, where cum = vec[0]+vec[1]+...+vec[n]
@@ -57,16 +56,20 @@ std::uint32_t count_less_than_target_subseq_sum(const std::vector<std::uint32_t>
     std::uint32_t ans=0;
     for(std::uint32_t n=0; n!=vec.size(); ++n)
     {
-        cum += vec[n];
+        cum += vec[n]; 
         if (cum < target)
         {
-            ++ans;
+            ans += n+1; // BUG1 : don't write ++ans 
         }
         else if (auto iter=index.upper_bound(cum-target); iter!=index.end())
         {
-            ans += n-iter->second;
+            ans += n-iter->second;  
         }
-        index[cum] = n; // theoretically, the same entry will not be overwritten
+        if (index.find(cum)==index.end()) // BUG2 : don't forget this checking
+        {
+            index[cum] = n; 
+        }
+    //  else implies that vec[n]==0, and no need to update index[cum] 
     }
     return ans;
 }
@@ -77,7 +80,7 @@ std::uint32_t count_less_than_target_subseq_sum_exhaustive(const std::vector<std
     for(std::uint32_t n=0; n!=vec.size(); ++n)
     {
         std::uint32_t cum=0;
-        for(std::uint32_t m=n+1; m!=vec.size(); ++m)
+        for(std::uint32_t m=n; m!=vec.size(); ++m)
         {
             cum += vec[m];
             if (cum < target) ++ans;
@@ -108,13 +111,32 @@ std::uint32_t count_less_than_target_subseq_product(const std::vector<std::uint3
         cum *= vec[n];
         if (cum < target)
         {
-            ++ans;
+            ans += n+1;
         }        
         else if (auto iter=index.upper_bound(cum/target); iter!=index.end())
         {
             ans += n-iter->second;
         }
-        index[cum] = n; 
+        if (index.find(cum)==index.end())
+        {
+            index[cum] = n; 
+        }
+    //  else implies that vec[n]==1, and no need to update index[cum]
+    }
+    return ans;
+}
+
+std::uint32_t count_less_than_target_subseq_product_exhaustive(const std::vector<std::uint32_t>& vec, std::uint32_t target)
+{
+    std::uint32_t ans=0;
+    for(std::uint32_t n=0; n!=vec.size(); ++n)
+    {
+        std::uint64_t cum=1;
+        for(std::uint32_t m=n; m!=vec.size(); ++m)
+        {
+            cum *= vec[m];
+            if (cum < target) ++ans;
+        }
     }
     return ans;
 }
@@ -140,18 +162,37 @@ std::uint32_t longest_target_subseq_sum(const std::vector<std::uint32_t>& vec, s
     return ans;
 }
 
+// ************ //
+// *** Test *** //
+// ************ //
 void test_count_less_than_target_subseq_sum()
 {
-    for(std::uint32_t n=0; n!=1; ++n)
+    for(std::uint32_t n=0; n!=500; ++n)
     {
         std::vector<std::uint32_t> vec;
-        for(std::uint32_t m=0; m!=10; ++m) vec.push_back(rand()%10);
-        std::cout << "\ncount less than target subseq sum : " << count_less_than_target_subseq_sum(vec, 30) <<
-                                                         ", " << count_less_than_target_subseq_sum_exhaustive(vec, 30);
+        for(std::uint32_t m=0; m!=1000; ++m) vec.push_back(rand()%10);
+
+        auto ans0 = count_less_than_target_subseq_sum(vec, 30);
+        auto ans1 = count_less_than_target_subseq_sum_exhaustive(vec, 30); 
+        std::cout << "\ncount less than target subseq sum : " << ans0 << ", " << ans1 << (ans0!=ans1? " ERROR":"");
+    }
+}
+
+void test_count_less_than_target_subseq_product()
+{
+    for(std::uint32_t n=0; n!=50; ++n)
+    {
+        std::vector<std::uint32_t> vec;
+        for(std::uint32_t m=0; m!=10; ++m) vec.push_back(rand()%10+1); // beware of overflow
+
+        auto ans0 = count_less_than_target_subseq_product(vec, 30);
+        auto ans1 = count_less_than_target_subseq_product_exhaustive(vec, 30); 
+        std::cout << "\ncount less than target subseq product : " << ans0 << ", " << ans1 << (ans0!=ans1? " ERROR":"");
     }
 }
 
 void test_subseq_sum_count()
 {
-    test_count_less_than_target_subseq_sum();
+//  test_count_less_than_target_subseq_sum();
+    test_count_less_than_target_subseq_product();
 }
