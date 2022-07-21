@@ -6,13 +6,19 @@ void test_arithmetics();
 void test_tree();
 void test_tree_variant();
 
+void test_subseq_sum_count();
+
+void test_polymorphism();
+
 int main()
 {
 //  test_arithmetics();
 //  test_tree();
-    test_tree_variant();
+//  test_tree_variant();
+    
+    test_subseq_sum_count();
 
-
+//  test_polymorphism();
 
 /*    
     interview::test_citadel_matrix_spiral();
