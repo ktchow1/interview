@@ -9,6 +9,7 @@ void test_tree_variant();
 void test_subseq_sum_count();
 void test_substr();
 void test_stack_trick();
+void test_sorting_trick();
 
 void test_polymorphism();
 
@@ -20,7 +21,8 @@ int main()
     
 //  test_subseq_sum_count();
 //  test_substr();
-    test_stack_trick();
+//  test_stack_trick();
+    test_sorting_trick();
 
 //  test_polymorphism();
 
