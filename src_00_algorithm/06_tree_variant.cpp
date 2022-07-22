@@ -330,6 +330,9 @@ void insert(node<V>* root, const std::string& key, const V& value)
 }
 }
 
+// ************ //
+// *** Test *** //
+// ************ //
 void test_heaptree()
 {
     heaptree<std::uint32_t> tree;

@@ -74,21 +74,6 @@ std::uint32_t count_less_than_target_subseq_sum(const std::vector<std::uint32_t>
     return ans;
 }
 
-std::uint32_t count_less_than_target_subseq_sum_exhaustive(const std::vector<std::uint32_t>& vec, std::uint32_t target)
-{
-    std::uint32_t ans=0;
-    for(std::uint32_t n=0; n!=vec.size(); ++n)
-    {
-        std::uint32_t cum=0;
-        for(std::uint32_t m=n; m!=vec.size(); ++m)
-        {
-            cum += vec[m];
-            if (cum < target) ++ans;
-        }
-    }
-    return ans;
-}
-
 // Find m such that : 
 //   
 //      cum / cum[m] < target, where cum = vec[0]*vec[1]*...*vec[n]
@@ -126,21 +111,6 @@ std::uint32_t count_less_than_target_subseq_product(const std::vector<std::uint3
     return ans;
 }
 
-std::uint32_t count_less_than_target_subseq_product_exhaustive(const std::vector<std::uint32_t>& vec, std::uint32_t target)
-{
-    std::uint32_t ans=0;
-    for(std::uint32_t n=0; n!=vec.size(); ++n)
-    {
-        std::uint64_t cum=1;
-        for(std::uint32_t m=n; m!=vec.size(); ++m)
-        {
-            cum *= vec[m];
-            if (cum < target) ++ans;
-        }
-    }
-    return ans;
-}
-
 std::uint32_t longest_target_subseq_sum(const std::vector<std::uint32_t>& vec, std::uint32_t target)
 {
     std::unordered_map<std::uint32_t, std::uint32_t> index; // index[sum] = min(n), where vec[0]+...vec[n] = sum
@@ -157,6 +127,39 @@ std::uint32_t longest_target_subseq_sum(const std::vector<std::uint32_t>& vec, s
         if (auto iter=index.find(cum); iter==index.end())
         {
             index[cum] = n;
+        }
+    }
+    return ans;
+}
+
+// ******************************* //
+// *** Benchmarking algorithms *** //
+// ******************************* //
+std::uint32_t count_less_than_target_subseq_sum_exhaustive(const std::vector<std::uint32_t>& vec, std::uint32_t target)
+{
+    std::uint32_t ans=0;
+    for(std::uint32_t n=0; n!=vec.size(); ++n)
+    {
+        std::uint32_t cum=0;
+        for(std::uint32_t m=n; m!=vec.size(); ++m)
+        {
+            cum += vec[m];
+            if (cum < target) ++ans;
+        }
+    }
+    return ans;
+}
+
+std::uint32_t count_less_than_target_subseq_product_exhaustive(const std::vector<std::uint32_t>& vec, std::uint32_t target)
+{
+    std::uint32_t ans=0;
+    for(std::uint32_t n=0; n!=vec.size(); ++n)
+    {
+        std::uint64_t cum=1;
+        for(std::uint32_t m=n; m!=vec.size(); ++m)
+        {
+            cum *= vec[m];
+            if (cum < target) ++ans;
         }
     }
     return ans;
