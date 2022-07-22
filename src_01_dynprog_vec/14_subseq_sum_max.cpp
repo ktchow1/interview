@@ -2,12 +2,12 @@
 #include<vector>
 #include<unordered_map>
 
-std::uint32_t max_subseq_sum(const std::vector<std::uint32_t>& vec)
+std::int32_t max_subseq_sum(const std::vector<std::int32_t>& vec)
 {
     if (vec.size() < 1) return 0;
 
-    std::uint32_t msp = vec[0];    
-    std::uint32_t ans = msp;    
+    std::int32_t msp = vec[0];    
+    std::int32_t ans = msp;    
     for(std::uint32_t n=1; n!=vec.size(); ++n)
     {
         msp = std::max(msp+vec[n], vec[n]);
@@ -16,13 +16,13 @@ std::uint32_t max_subseq_sum(const std::vector<std::uint32_t>& vec)
     return ans;
 }
 
-std::uint32_t max_subseq_product(const std::vector<std::uint32_t>& vec)
+std::int32_t max_subseq_product(const std::vector<std::int32_t>& vec)
 {
     if (vec.size() < 1) return 0;
 
-    std::uint32_t msp0 = vec[0];    
-    std::uint32_t msp1 = vec[0];    
-    std::uint32_t ans  = vec[0];    
+    std::int32_t msp0 = vec[0];    
+    std::int32_t msp1 = vec[0];    
+    std::int32_t ans  = vec[0];    
     for(std::uint32_t n=1; n!=vec.size(); ++n)
     {
         auto tmp0 = msp0;
@@ -34,13 +34,13 @@ std::uint32_t max_subseq_product(const std::vector<std::uint32_t>& vec)
     return ans;
 }
 
-std::uint32_t max_non_contiguous_subseq_sum(const std::vector<std::uint32_t>& vec)
+std::int32_t max_non_contiguous_subseq_sum(const std::vector<std::int32_t>& vec)
 {
     if (vec.size() < 1) return 0;
 
-    std::uint32_t msp0 = vec[0]; // include the last element  
-    std::uint32_t msp1 = 1;      // enclude the last element  
-    std::uint32_t ans  = std::max(msp0, msp1);    
+    std::int32_t msp0 = vec[0]; // include the last element  
+    std::int32_t msp1 = 1;      // enclude the last element  
+    std::int32_t ans  = std::max(msp0, msp1);    
     for(std::uint32_t n=1; n!=vec.size(); ++n)
     {
         auto tmp0 = msp0;
@@ -52,12 +52,12 @@ std::uint32_t max_non_contiguous_subseq_sum(const std::vector<std::uint32_t>& ve
     return ans;
 }
 
-std::uint32_t max_puzzle_game(const std::vector<std::uint32_t>& vec)
+std::int32_t max_puzzle_game(const std::vector<std::int32_t>& vec)
 {
-    std::uint32_t max = *std::max_element(vec.begin(), vec.end());
-    std::uint32_t min = *std::min_element(vec.begin(), vec.end());
+    std::int32_t max = *std::max_element(vec.begin(), vec.end());
+    std::int32_t min = *std::min_element(vec.begin(), vec.end());
 
-    std::unordered_map<std::uint32_t, std::uint32_t> hist;    
+    std::unordered_map<std::int32_t, std::uint32_t> hist;    
     for(const auto& x:vec)
     {
         if (auto iter = hist.find(x); iter!=hist.end())
@@ -70,9 +70,9 @@ std::uint32_t max_puzzle_game(const std::vector<std::uint32_t>& vec)
         }
     }
 
-    std::uint32_t msp0 = min; // include the last element
-    std::uint32_t msp1 = 0;   // exclude the last element
-    std::uint32_t ans;
+    std::int32_t msp0 = min; // include the last element
+    std::int32_t msp1 = 0;   // exclude the last element
+    std::int32_t ans;
     for(std::uint32_t n=min+1; n<=max; ++n)
     {
         auto tmp0 = msp0;
