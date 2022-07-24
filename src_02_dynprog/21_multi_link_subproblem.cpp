@@ -39,7 +39,7 @@ struct bool_logic
     logic op;
 };
 
-auto merge_two_subproblems(const logic& op, const auto& sub0, const auto& sub1)
+auto merge_bool_parenthesis_subproblems(const logic& op, const auto& sub0, const auto& sub1)
 {
     std::uint32_t num_true;
     std::uint32_t num_false;
@@ -81,7 +81,7 @@ num_bool_parenthesis_recursive(const std::vector<bool_logic>::const_iterator& be
     {
         auto sub0 = num_bool_parenthesis_recursive(begin, iter+1);
         auto sub1 = num_bool_parenthesis_recursive(iter+1, end);
-        auto sub  = merge_two_subproblems(iter->op, sub0, sub1);
+        auto sub  = merge_bool_parenthesis_subproblems(iter->op, sub0, sub1);
         num_true  += sub.first;
         num_false += sub.second;
     }
@@ -102,6 +102,7 @@ num_bool_parenthesis_iterative(const std::vector<bool_logic>::const_iterator& be
                                  std::pair<std::uint32_t, std::uint32_t>{0,1});
     }
 
+    // Iterate through each sub-diagonal 
     for(std::uint32_t subdiag=1; subdiag!=N; ++subdiag)
     {
         for(std::uint32_t n=0; n!=N-subdiag; ++n)
@@ -111,7 +112,7 @@ num_bool_parenthesis_iterative(const std::vector<bool_logic>::const_iterator& be
             mat(n,m).second = 0;
             for(std::uint32_t k=0; k!=m; ++k)
             {
-                auto sub = merge_two_subproblems((begin+k)->op, mat(n,k), mat(k+1,m));
+                auto sub = merge_bool_parenthesis_subproblems((begin+k)->op, mat(n,k), mat(k+1,m));
                 mat(n,m).first  += sub.first;
                 mat(n,m).second += sub.second;
             }
@@ -123,10 +124,63 @@ num_bool_parenthesis_iterative(const std::vector<bool_logic>::const_iterator& be
 // ***************** //
 // *** Coin game *** //
 // ***************** //
-//
-// f(n.m) = std::max(vec[n]+std::min(f(n+2,m),f(n+1,m-1),
-//                   vec[m]+std::min(f(n+1,m-1),f(n,m-2))
-//
+std::uint32_t merge_coin_game_subproblem(std::uint32_t value_front, 
+                                         std::uint32_t value_back, 
+                                         std::uint32_t sub0, // two front coins are popped
+                                         std::uint32_t sub1, // one front coin and one back coin are popped
+                                         std::uint32_t sub2) // two back  coins are popped
+{
+    return std::max
+    (
+        value_front + std::min(sub0, sub1),
+        value_back  + std::min(sub1, sub2)
+    );
+}
+
+std::uint32_t coin_game_recursive(const std::vector<std::uint32_t>::const_iterator& begin, 
+                                  const std::vector<std::uint32_t>::const_iterator& end) 
+{
+    if (begin+1==end) // diagonal
+    {
+        return *begin;
+    }
+    else if (begin+2==end) // first subdiagonal
+    {
+        return std::max(*begin, *(begin+1));
+    }
+
+    auto sub0 = coin_game_recursive(begin+2, end);   
+    auto sub1 = coin_game_recursive(begin+1, end-1); 
+    auto sub2 = coin_game_recursive(begin,   end-2); 
+    return merge_coin_game_subproblem(*begin, *(end-1), sub0, sub1, sub2);
+}
+
+std::uint32_t coin_game_iterative(const std::vector<std::uint32_t>::const_iterator& begin, 
+                                  const std::vector<std::uint32_t>::const_iterator& end) 
+{
+    std::uint32_t N = std::distance(begin, end);
+    matrix<std::uint32_t> mat(N,N); 
+
+    std::uint32_t k=0; 
+    for(auto iter=begin; iter!=end; ++iter, ++k) mat(k,k) = *iter; // diagonal
+    if (N>=2)
+    {
+        k=0;
+        for(auto iter=begin; iter!=end-1; ++iter, ++k) mat(k,k+1) = std::max(*iter,*(iter+1)); // first diaogonal
+    }
+    
+    // Iterate through each sub-diagonal 
+    for(std::uint32_t subdiag=2; subdiag!=N; ++subdiag)
+    {
+        for(std::uint32_t n=0; n!=N-subdiag; ++n)
+        {
+            std::uint32_t m=n+subdiag;
+            mat(n,m) = merge_coin_game_subproblem(*(begin+n), *(begin+m), mat(n+2,m), mat(n+1,m-1), mat(n,m-2));
+        }
+    }
+    return mat(0,N-1);
+}
+
 // ************ //
 // *** Test *** //
 // ************ //
@@ -145,6 +199,16 @@ std::vector<bool_logic> gen_bool_logic_vector(std::uint32_t N)
         else if (tmp==4)   vec.push_back({false, logic::XOR});
         else               vec.push_back({false, logic::AND});
     } 
+    return vec;
+}
+
+std::vector<std::uint32_t> gen_coin_game(std::uint32_t N)
+{
+    std::vector<std::uint32_t> vec;
+    for(std::uint32_t n=0; n!=N; ++n)
+    {
+        vec.push_back(rand()%10+1);
+    }
     return vec;
 }
 
@@ -192,10 +256,29 @@ void test_num_bool_parenthesis()
                 std::cout << (x.value? "T":"F") << "]";
             }
         }
-        std::cout << "\nans0  = " << ans0.first << " + " << ans0.second 
-                  << "\nans1  = " << ans1.first << " + " << ans1.second; 
+        std::cout << "\nans0  = " << ans0.first << " + " << ans0.second;
+        std::cout << "\nans1  = " << ans1.first << " + " << ans1.second; 
         if (ans0.first  != ans1.first ||
             ans0.second != ans1.second) std::cout << " [error]";
+    }
+}
+
+void test_coin_game()
+{
+    for(std::uint32_t n=0; n!=100; ++n)
+    {
+        auto vec = gen_coin_game(rand()%15+2); 
+        auto ans0 = coin_game_recursive(vec.begin(), vec.end());
+        auto ans1 = coin_game_iterative(vec.begin(), vec.end());
+
+        std::cout << "\ninput = ";
+        for(const auto& x:vec)
+        {
+            std::cout << x << " ";
+        }   
+        std::cout << "\nans0  = " << ans0;
+        std::cout << "\nans1  = " << ans1; 
+        if (ans0 != ans1) std::cout << " [error]";
     }
 }
 
@@ -203,5 +286,6 @@ void test_multi_link_subproblem()
 {
 //  test_nCr();
 //  test_bell_number();
-    test_num_bool_parenthesis();
+//  test_num_bool_parenthesis();
+    test_coin_game();
 }
