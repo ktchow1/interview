@@ -34,7 +34,7 @@ file(GLOB SOURCES
      "src/*.cpp"
      "src_00_algorithm/*.cpp"
      "src_01_dynprog_vec/*.cpp"
-#    "src_02_dynprog/*.cpp"
+     "src_02_dynprog/*.cpp"
      "src_11_fundalmental/*.cpp"
      "src_12_rvalue/*.cpp"
      "src_13_type_deduction/*.cpp"

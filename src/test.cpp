@@ -11,6 +11,9 @@ void test_substr();
 void test_stack_trick();
 void test_sorting_trick();
 
+void test_singly_link_subproblem();
+void test_multi_link_subproblem();
+
 void test_polymorphism();
 
 int main()
@@ -22,7 +25,10 @@ int main()
 //  test_subseq_sum_count();
 //  test_substr();
 //  test_stack_trick();
-    test_sorting_trick();
+//  test_sorting_trick();
+
+//  test_singly_link_subproblem();
+    test_multi_link_subproblem();
 
 //  test_polymorphism();
 

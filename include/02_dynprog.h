@@ -41,8 +41,39 @@
 // subseq_sum    sub      hist + cum
 // --------------------------------------------
 
-namespace dynprog_vec
+template<typename T>
+struct matrix
 {
-     
-}
+    matrix(std::uint32_t _size_y, std::uint32_t _size_x) : size_y(_size_y), size_x(_size_x)
+    {
+        impl.resize(size_y * size_x);
+    }
 
+    const T& operator()(std::uint32_t y, std::uint32_t x) const
+    {
+        return impl[y * size_x + x];
+    }
+
+    T& operator()(std::uint32_t y, std::uint32_t x)
+    {
+        return impl[y * size_x + x];
+    }
+
+    void debug() const noexcept
+    {
+        std::cout << "\nMatrix";
+        for(std::uint32_t n=0; n!=size_y; ++n)
+        {
+            std::cout << "\n";
+            for(std::uint32_t m=0; m!=size_x; ++m)
+            {
+                std::cout << (*this)(n,m) << " ";
+            }
+        }
+        std::cout << "\n";
+    }
+
+    std::uint32_t size_y;
+    std::uint32_t size_x;
+    std::vector<T> impl;
+};

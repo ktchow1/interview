@@ -110,12 +110,12 @@ namespace btree
 template<typename K, typename V>
 struct node
 {
-    node(const K& key, const V& value) : parent(nullptr),  first_child(nullptr)
+    node(const K& key, const V& value) :  last_child(nullptr), parent(nullptr) 
     {
         impl[key] = std::make_pair(value, nullptr);
     }
 
-    node(const K& key, const V& value, node<K,V>* x) : parent(x),  first_child(nullptr)
+    node(const K& key, const V& value, node<K,V>* x) : last_child(nullptr), parent(nullptr)
     {
         impl[key] = std::make_pair(value, nullptr);
     }
@@ -123,13 +123,13 @@ struct node
     // ***************************************** //
     // The following :
     // 1. ensures #children = #keys + 1
-    // 2. either first_child == nullptr or 
-    //    impl[any_key].second == nullptr 
+    // 2. either impl[any_key].second == nullptr or
+    //                     last_child == nullptr  
     //    then this_node is considered as a leaf
     // ***************************************** //
+    std::map<K, std::pair<V, node<K,V>*>> impl; // "pair::second" is the child with value below "pair::first"
+    node<K,V>* last_child;
     node<K,V>* parent;
-    node<K,V>* first_child;
-    std::map<K, std::pair<V, node<K,V>*>> impl; // values and children together
 };
 
 template<typename K, typename V>
@@ -140,7 +140,7 @@ std::optional<V> search(const node<K,V>* root, const K& key)
     node<K,V>* this_node = root;
     while(this_node)
     {
-        // find an iter->key >= key
+        // find the first iter with key >= target key
         auto iter = this_node->impl.lower_bound(key); 
 
         // [step 1] check against key (return straight away)
@@ -150,13 +150,13 @@ std::optional<V> search(const node<K,V>* root, const K& key)
         }
 
         // [step 2] check between keys (traverse to child node)
-        if (iter == this_node->impl.begin())
+        if (iter != this_node->impl.end())
         {
-            this_node = this_node->first_child;
+            this_node = iter->second.second;
         }
-        else // works for iter == this_node->impl.end()
+        else 
         {
-            this_node = std::prev(iter)->second.second;
+            this_node = this_node->last_child;
         }
     }
     return std::nullopt;
@@ -171,14 +171,14 @@ void insert(const node<K,V>* root, const K& key, const V& value)
     //
     // please consider 3 cases (actually 2 only) :
     // 1. if this_node is the root, then create one parent ... 
-    //    parent.first_child        =                  this_node
-    //    parent.impl[promoted_key] = {promoted_value, next_node}
+    //    parent.impl[promoted_key] = {promoted_value, this_node}
+    //    parent.last_child         =                  next_node
     //    next_node.parent = parent
     //
-    // 2. if this_node is not root and if it is parent's first_child ...
+    // 2. if this_node is not root and if it is parent's last_child ...
     //    same as above
     //
-    // 3. if this_node is not root and if it is NOT parent's first_child ...
+    // 3. if this_node is not root and if it is NOT parent's last_child ...
     //    parent.impl[original_key] = {original_value, this_node}
     //    parent.impl[promoted_key] = {promoted_value, next_node}
     //    next_node.parent = parent
