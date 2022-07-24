@@ -49,6 +49,12 @@ struct matrix
         impl.resize(size_y * size_x);
     }
 
+    matrix(std::uint32_t _size_y, std::uint32_t _size_x, const T& init) : size_y(_size_y), size_x(_size_x)
+    {
+        impl.resize(size_y * size_x);
+        for(auto& x:init) x = init;
+    }
+
     const T& operator()(std::uint32_t y, std::uint32_t x) const
     {
         return impl[y * size_x + x];
@@ -73,6 +79,36 @@ struct matrix
         std::cout << "\n";
     }
 
+    std::uint32_t size_y;
+    std::uint32_t size_x;
+    std::vector<T> impl;
+};
+  
+template<typename T>
+struct tenor
+{
+    tenor(std::uint32_t _size_z, std::uint32_t _size_y, std::uint32_t _size_x) : size_z(_size_z), size_y(_size_y), size_x(_size_x)
+    {
+        impl.resize(size_z, size_y * size_x);
+    }
+
+    tenor(std::uint32_t _size_z, std::uint32_t _size_y, std::uint32_t _size_x, const T& init) : size_z(_size_z), size_y(_size_y), size_x(_size_x)
+    {
+        impl.resize(size_z, size_y * size_x);
+        for(auto& x:impl) x = init;
+    }
+
+    const T& operator()(std::uint32_t z, std::uint32_t y, std::uint32_t x) const
+    {
+        return impl[z * size_y * size_x + y * size_x + x];
+    }
+
+    T& operator()(std::uint32_t z, std::uint32_t y, std::uint32_t x)
+    {
+        return impl[z * size_y * size_x + y * size_x + x];
+    }
+
+    std::uint32_t size_z;
     std::uint32_t size_y;
     std::uint32_t size_x;
     std::vector<T> impl;
