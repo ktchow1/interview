@@ -1,5 +1,6 @@
 #include<iostream>
 #include<vector>
+#include<map>
 #include<02_dynprog.h>
 
 std::uint64_t nCr(std::uint16_t n, std::uint16_t r)
@@ -293,7 +294,7 @@ double piecewise_linear_regresson(const std::vector<coord>::const_iterator& begi
 // ******************** //
 // *** Box stacking *** //
 // ******************** //
-// Experiment finds that both recursive and iterative are slow for box stacking.
+// Experiment finds that iterative approach is much faster than recursive approach.
 
 struct box
 {
@@ -333,51 +334,83 @@ std::uint32_t box_stacking_recursive(const std::vector<box>::const_iterator& beg
 }
 
 // This approach is like time-state diagram approach.
-struct box_stack_info
+struct base
 {
-    std::uint32_t total_height;
     std::uint32_t base_short;
     std::uint32_t base_long;
 };
+
+bool operator<(const base& lhs, const base& rhs)
+{
+    if (lhs.base_short < rhs.base_short) return  true;
+    if (lhs.base_short > rhs.base_short) return false;
+    if (lhs.base_long  < rhs.base_long)  return  true;
+    return false;
+}
+
+// map[base] = total_height
+void update(std::map<base, std::uint32_t>& status, std::uint32_t base0, std::uint32_t base1, std::uint32_t height)
+{
+    std::uint32_t base_min = std::min(base0, base1);
+    std::uint32_t base_max = std::max(base0, base1);
+    if (auto iter=status.find(base{base_min, base_max}); iter!=status.end())
+    {
+        if (iter->second < height)
+            iter->second = height;
+    }
+    else
+    {
+        status[base{base_min, base_max}] = height;
+    }
+}
 
 std::uint32_t box_stacking_iterative(const std::vector<box>::const_iterator& begin, 
                                      const std::vector<box>::const_iterator& end,
                                      std::uint32_t base_short = 0,
                                      std::uint32_t base_long  = 0)
 {
-    std::vector<box_stack_info> vec;
-    for(auto iter=begin; iter!=end; ++iter)
+    std::map<base, std::uint32_t> status;
+    for(auto iter=begin; iter!=end; ++iter) // iterate in time domain
     {
-        std::vector<box_stack_info> vec0;
-        vec0.push_back({iter->z, std::min(iter->x, iter->y), std::max(iter->x, iter->y)});
-        vec0.push_back({iter->x, std::min(iter->y, iter->z), std::max(iter->y, iter->z)});
-        vec0.push_back({iter->y, std::min(iter->z, iter->x), std::max(iter->z, iter->x)});
-        for(const auto& info:vec)
+        std::map<base, std::uint32_t> status0;
+        update(status0, iter->x, iter->y, iter->z);
+        update(status0, iter->y, iter->z, iter->x);
+        update(status0, iter->z, iter->x, iter->y);
+        for(const auto& info:status) // iterate in state domain
         {
             auto new_base_short = std::min(iter->x, iter->y);
             auto new_base_long  = std::max(iter->x, iter->y);
-            if (new_base_short >= info.base_short && 
-                new_base_long  >= info.base_long) vec0.push_back({info.total_height + iter->z, new_base_short, new_base_long});
+            if (new_base_short >= info.first.base_short && 
+                new_base_long  >= info.first.base_long) 
+            {
+                update(status0, new_base_short, new_base_long, info.second + iter->z);
+            }
             new_base_short = std::min(iter->y, iter->z);
             new_base_long  = std::max(iter->y, iter->z);
-            if (new_base_short >= info.base_short && 
-                new_base_long  >= info.base_long) vec0.push_back({info.total_height + iter->x, new_base_short, new_base_long});
+            if (new_base_short >= info.first.base_short && 
+                new_base_long  >= info.first.base_long) 
+            {
+                update(status0, new_base_short, new_base_long, info.second + iter->x);
+            }
             new_base_short = std::min(iter->z, iter->x);
             new_base_long  = std::max(iter->z, iter->x);
-            if (new_base_short >= info.base_short && 
-                new_base_long  >= info.base_long) vec0.push_back({info.total_height + iter->y, new_base_short, new_base_long});
+            if (new_base_short >= info.first.base_short && 
+                new_base_long  >= info.first.base_long) 
+            {
+                update(status0, new_base_short, new_base_long, info.second + iter->y);
+            }
 
             // BUG : Dont forget this case
-            vec0.push_back(info);
+            status0.insert(info);
         }
-        vec = std::move(vec0);
+        status = std::move(status0);
     }
 
     // Find max height 
     std::uint32_t ans = 0;
-    for(const auto& info:vec)
+    for(const auto& info:status)
     {
-        if (ans < info.total_height) ans = info.total_height;
+        if (ans < info.second) ans = info.second;
     }
     return ans;
 }
@@ -482,7 +515,6 @@ void test_num_bool_parenthesis()
         auto ans0 = num_bool_parenthesis_recursive(vec.begin(), vec.end());
         auto ans1 = num_bool_parenthesis_iterative(vec.begin(), vec.end());
 
-        // iterative approach should be faster than recursive approach
         std::cout << "\ninput = [";
         for(const auto& x:vec) 
         {
@@ -527,7 +559,7 @@ void test_box_stacking()
 {
     for(std::uint32_t n=0; n!=100; ++n)
     {
-        auto vec = gen_box_stack(12);
+        auto vec = gen_box_stack(13);
         auto ans0 = box_stacking_recursive(vec.begin(), vec.end());
         auto ans1 = box_stacking_iterative(vec.begin(), vec.end());
 
