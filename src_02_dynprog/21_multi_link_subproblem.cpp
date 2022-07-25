@@ -349,7 +349,7 @@ bool operator<(const base& lhs, const base& rhs)
 }
 
 // map[base] = total_height
-void update(std::map<base, std::uint32_t>& status, std::uint32_t base0, std::uint32_t base1, std::uint32_t height)
+void euler_update(std::map<base, std::uint32_t>& status, std::uint32_t base0, std::uint32_t base1, std::uint32_t height)
 {
     std::uint32_t base_min = std::min(base0, base1);
     std::uint32_t base_max = std::max(base0, base1);
@@ -373,9 +373,9 @@ std::uint32_t box_stacking_iterative(const std::vector<box>::const_iterator& beg
     for(auto iter=begin; iter!=end; ++iter) // iterate in time domain
     {
         std::map<base, std::uint32_t> status0;
-        update(status0, iter->x, iter->y, iter->z);
-        update(status0, iter->y, iter->z, iter->x);
-        update(status0, iter->z, iter->x, iter->y);
+        euler_update(status0, iter->x, iter->y, iter->z);
+        euler_update(status0, iter->y, iter->z, iter->x);
+        euler_update(status0, iter->z, iter->x, iter->y);
         for(const auto& info:status) // iterate in state domain
         {
             auto new_base_short = std::min(iter->x, iter->y);
@@ -383,21 +383,21 @@ std::uint32_t box_stacking_iterative(const std::vector<box>::const_iterator& beg
             if (new_base_short >= info.first.base_short && 
                 new_base_long  >= info.first.base_long) 
             {
-                update(status0, new_base_short, new_base_long, info.second + iter->z);
+                euler_update(status0, new_base_short, new_base_long, info.second + iter->z);
             }
             new_base_short = std::min(iter->y, iter->z);
             new_base_long  = std::max(iter->y, iter->z);
             if (new_base_short >= info.first.base_short && 
                 new_base_long  >= info.first.base_long) 
             {
-                update(status0, new_base_short, new_base_long, info.second + iter->x);
+                euler_update(status0, new_base_short, new_base_long, info.second + iter->x);
             }
             new_base_short = std::min(iter->z, iter->x);
             new_base_long  = std::max(iter->z, iter->x);
             if (new_base_short >= info.first.base_short && 
                 new_base_long  >= info.first.base_long) 
             {
-                update(status0, new_base_short, new_base_long, info.second + iter->y);
+                euler_update(status0, new_base_short, new_base_long, info.second + iter->y);
             }
 
             // BUG : Dont forget this case

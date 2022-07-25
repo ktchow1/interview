@@ -13,6 +13,7 @@ void test_sorting_trick();
 
 void test_singly_link_subproblem();
 void test_multi_link_subproblem();
+void test_time_state_diagram();
 
 void test_polymorphism();
 
@@ -28,7 +29,8 @@ int main()
 //  test_sorting_trick();
 
 //  test_singly_link_subproblem();
-    test_multi_link_subproblem();
+//  test_multi_link_subproblem();
+    test_time_state_diagram();
 
 //  test_polymorphism();
 
