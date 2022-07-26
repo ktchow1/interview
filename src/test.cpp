@@ -17,6 +17,8 @@ void test_time_state_diagram();
 
 void test_polymorphism();
 
+void test_template_index_sequence();
+
 int main()
 {
 //  test_arithmetics();
@@ -30,9 +32,11 @@ int main()
 
 //  test_singly_link_subproblem();
 //  test_multi_link_subproblem();
-    test_time_state_diagram();
+//  test_time_state_diagram();
 
 //  test_polymorphism();
+//
+    test_template_index_sequence();
 
 /*    
     interview::test_citadel_matrix_spiral();

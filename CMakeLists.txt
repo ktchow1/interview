@@ -35,10 +35,10 @@ file(GLOB SOURCES
      "src_00_algorithm/*.cpp"
      "src_01_dynprog_vec/*.cpp"
      "src_02_dynprog/*.cpp"
-     "src_11_fundalmental/*.cpp"
-     "src_12_rvalue/*.cpp"
-     "src_13_type_deduction/*.cpp"
-     "src_14_fundalmental/*.cpp"
+     "src_03_fundalmental/*.cpp"
+     "src_04_rvalue/*.cpp"
+     "src_05_type_deduction/*.cpp"
+     "src_06_fundalmental/*.cpp"
      "src_interview/*.cpp"
 )
 add_executable(Test ${SOURCES})       # for building executable
