@@ -173,25 +173,25 @@ struct push_back_idx_seq<N, idx_seq<Ns...>>               // <===
 // *** Filter index sequence *** //
 // ***************************** //
 template<typename T> 
-struct filter_idx_seq
+struct filter_idx_seq // <--- This is interface.
 {
     // In general, T is not filterable. 
 };
 
 template<>
-struct filter_idx_seq<idx_seq<>>
+struct filter_idx_seq<idx_seq<>> // <--- This is implementation for boundary case.
 {
     using type = idx_seq<>; 
 };
 
 template<std::uint32_t N0>
-struct filter_idx_seq<idx_seq<N0>>
+struct filter_idx_seq<idx_seq<N0>> // <--- This is implementation for boundary case.
 {
     using type = idx_seq<N0>;
 };
 
 template<std::uint32_t N0, std::uint32_t N1, std::uint32_t...Ns>
-struct filter_idx_seq<idx_seq<N0,N1,Ns...>>
+struct filter_idx_seq<idx_seq<N0,N1,Ns...>> // <--- This is implementation for recursion.
 {
     using type = typename push_front_idx_seq<N0, typename filter_idx_seq<idx_seq<Ns...>>::type>::type;
 };

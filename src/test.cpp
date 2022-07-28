@@ -17,8 +17,10 @@ void test_time_state_diagram();
 
 void test_polymorphism();
 
+void test_template();
 void test_template_index_sequence();
 void test_template_tuple();
+void test_template_tuple2();
 
 int main()
 {
@@ -37,8 +39,10 @@ int main()
 
 //  test_polymorphism();
 //
+    test_template();
     test_template_index_sequence();
     test_template_tuple();
+    test_template_tuple2();
 
 /*    
     interview::test_citadel_matrix_spiral();
