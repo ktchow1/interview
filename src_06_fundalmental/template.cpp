@@ -51,6 +51,7 @@ void test_template_class_specialization()
 
 // Unlike template class, there is no such limitation on template function,  
 // as template functions are just function overload. 
+// We can even put parameter after parameter-pack (see line A).
 
 template<typename...T>  
 void sample_function(const T&... x)
@@ -58,16 +59,22 @@ void sample_function(const T&... x)
     std::cout << "\nsample function = overrload 0";
 }
 
+template<typename...T, typename U> // <--- line A
+void sample_function(const std::tuple<T..., U>& tup) 
+{
+    std::cout << "\nsample function = overrload 1";
+}
+
 template<typename T0, typename T1, typename T2> 
 void sample_function(const T0& x0, const T1& x1, const T2& x2)
 {
-    std::cout << "\nsample function = overrload 1";
+    std::cout << "\nsample function = overrload 2";
 }
 
 template<typename T0, typename T1, typename T2, typename T3>  
 void sample_function(const T0& x0, const T1& x1, const T2& x2, const T3& x3)
 {
-    std::cout << "\nsample function = overrload 2";
+    std::cout << "\nsample function = overrload 3";
 }
 
 void test_template_function_specialization()
@@ -78,6 +85,9 @@ void test_template_function_specialization()
     sample_function(std::uint32_t{1}, std::uint32_t{1}, std::uint32_t{1});
     sample_function(std::uint32_t{1}, std::uint32_t{1}, std::uint32_t{1}, std::uint32_t{1});
     sample_function(std::uint32_t{1}, std::uint32_t{1}, std::uint32_t{1}, std::uint32_t{1}, std::uint32_t{1});
+    sample_function(std::make_tuple(1));       // unfornately, 0 is invoked
+    sample_function(std::make_tuple(1,2));     // unfornately, 0 is invoked
+    sample_function(std::make_tuple(1,2,3));   // unfornately, 0 is invoked
 }
 
 void test_template()
