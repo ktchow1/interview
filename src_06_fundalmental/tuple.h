@@ -3,26 +3,22 @@
 #include<tuple>
 #include"idx_seq.h"
 
-// For index sequence, we can get reversed type :
-//
-// reverse_idx_seq<idx_seq<1,2,3,4,5>>::type == idx_seq<5,4,3,2,1>
-//
-// For tuple, since it has members, we can get reversed type AND reversed object :
-// 
-// reverse_tuple<std::tuple<A,B,C,D,E>>::type == std::tuple<E,D,C,B,A>    <--- reverse the type 
-// reverse_tuple_object(t0) == t1                                         <--- reverse the type and the value <--- in fact this is easier, see remark
-//
-// where t0 is an object of std::tuple<A,B,C,D,E>
-//       t1 is an object of std::tuple<E,D,C,B,A>
-//
-// Remark : reverse of tuple object is easier than reverse of tuple type, because :
-// 1. there is an input object (like x below), we can operate with
-// 2. there is a factory called std::make_tuple<>() which can resolve T... 
-// 
-// ************************************* //
-// *** Shuffle tuple (get type only) *** //
-// ************************************* //
+// In the following : 
+// 1. template class is type-traits
+// 2. template function is factory 
+// 3. they might differ in implementation 
+// 4. for template class, we usually have to (see tuple_size comment)
+// -  implement a generic class as interface 
+// -  implement a specialized class as implementation 
+// -  the generic class defines dimension of template 
+// -  the specialized class converts original dimension to another dimension (see remark A)
+// 5. if the specialized class is implemented recursively, we need to provide boundary case(s)
 
+
+
+// ********************* //
+// *** Shuffle tuple *** //
+// ********************* //
 // *** Method 1 *** //
 template<typename TUP, std::uint32_t...Ns>
 struct shuffle_tuple
@@ -34,12 +30,10 @@ struct shuffle_tuple
 template<typename TUP, typename IS> 
 struct shuffle_tuple2
 {
-    // Unlike method 1, we need a default case here,
-    // to convert <TUP,IS> to <TUP,Ns...>
 };
 
 template<typename TUP, std::uint32_t...Ns> 
-struct shuffle_tuple2<TUP, idx_seq<Ns...>>
+struct shuffle_tuple2<TUP, idx_seq<Ns...>> // Remark A : convert from dimension <TUP,IS> to <TUP,Ns...>
 {
     using type = std::tuple<typename std::tuple_element<Ns,TUP>::type...>; 
 };
@@ -50,6 +44,7 @@ auto make_shuffle_tuple(const TUP& x, std::index_sequence<Ns...> dummy)
 {
     return std::make_tuple(std::get<Ns>(x)...);
 }
+
 
 
 // ******************** //
@@ -66,15 +61,12 @@ struct append_tuple<std::tuple<Ts...>,T>
     using type = std::tuple<Ts...,T>;
 };
 
-// Factory is a function, enhance no need to separate :
-// * generic-interface 
-// * specialization-implementation
-//  
 // template<typename...Ts, typename T>
 // auto make_append_tuple(const std::tuple<Ts...>& tup, const T& x)
 // {
 //     return std::make_tuple(std::forward<Ts>(xs)..., x);
 // }
+
 
 
 // ********************* //
@@ -84,7 +76,7 @@ struct append_tuple<std::tuple<Ts...>,T>
 template<typename TUP>
 struct reverse_tuple
 {
-    using type = typename shuffle_tuple2<TUP, typename rev_idx_seq_generator<std::tuple_size<TUP>::value>::type>::type;
+    using type = typename shuffle_tuple2<TUP, typename inv_idx_seq_generator<std::tuple_size<TUP>::value>::type>::type;
 };
 
 // *** Method 2 (using append tuple) *** //
@@ -120,9 +112,10 @@ auto make_reverse_tuple(const TUP& x)
 }
 
 
-// ****************************** //
-// *** Tuple size and element *** //
-// ****************************** //
+
+// ****************** //
+// *** Tuple size *** //
+// ****************** //
 template<typename TUP>
 struct tuple_size 
 {
@@ -137,6 +130,12 @@ struct tuple_size<std::tuple<Ts...>>
     static const std::uint32_t value = type::value;
 };
 
+
+
+// ********************* //
+// *** Tuple element *** //
+// ********************* //
+// *** Method 1 *** //
 template<std::uint32_t N, typename TUP> // <--- interface
 struct tuple_element 
 {
@@ -154,13 +153,15 @@ struct tuple_element<N, std::tuple<T,Ts...>>
     using type = tuple_element<N-1, std::tuple<Ts...>>::type;
 };
 
-// Another approach 
+// *** Method 2 *** //
 template<std::uint32_t N, typename TUP> 
 struct tuple_element2
 {
     using type = std::remove_cvref_t<decltype(std::get<N>(std::declval<TUP>()))>;
 //  using type =                     decltype(std::get<N>(std::declval<TUP>())); // BUG : Does not work !!!
 };
+
+
 
 // ***************** //
 // *** Tuple cat *** //
@@ -181,6 +182,7 @@ struct tuple_cat<TUP0, std::tuple<T,Ts...>>
 {
     using type = tuple_cat<typename append_tuple<TUP0,T>::type, std::tuple<Ts...>>::type;
 }; 
+
 
 
 // ******************* //

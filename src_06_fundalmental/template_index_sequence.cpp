@@ -8,7 +8,7 @@
 void test_template_index_sequence()
 {
     static_assert(std::is_same_v<    idx_seq_generator <5>::type, idx_seq<0,1,2,3,4>>, "failed to generate idx_seq");
-    static_assert(std::is_same_v<rev_idx_seq_generator <5>::type, idx_seq<4,3,2,1,0>>, "failed to generate rev idx_seq");
+    static_assert(std::is_same_v<inv_idx_seq_generator <5>::type, idx_seq<4,3,2,1,0>>, "failed to generate rev idx_seq");
     static_assert(std::is_same_v<alt_idx_seq_generator<10>::type, idx_seq<0,2,4,6,8>>, "failed to generate alt idx_seq");
     static_assert(std::is_same_v<alt_idx_seq_generator<11>::type, idx_seq<1,3,5,7,9>>, "failed to generate alt idx_seq");
 

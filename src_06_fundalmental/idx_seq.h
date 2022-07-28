@@ -7,7 +7,7 @@
 // -  do not put fomrula, like N-1, or sizeof...(Ns)
 // 2. In template struct body : 
 // -  we can put parameter after parameter-pack
-// -  we can put formula, like N-1, or sizeof<Plug>_...(Ns)
+// -  we can put formula, like N-1, or sizeof...(Ns)
 // 3. As the pack expands, the tail remains unchanged, see the illustrative comment below.
 
 
@@ -15,15 +15,17 @@ template<std::uint32_t ...Ns> struct idx_seq
 {
 };
 
-// Objective :
-// idx_seq_generator<4>::type ---> idx_seq<0,1,2,3>
-//
-// Approach 1 works, it supposes to do :
-// (1) idx_seq_generator<4>::type = idx_seq_generator<3,3> ::type
-//                                = idx_seq_generator<2,2,3> ::type
-//                                = idx_seq_generator<1,1,2,3> ::type
-//                                = idx_seq_generator<0,0,1,2,3> ::type <--- recursion
-//                                = idx_seq<0,1,2,3>                    <--- boundary condition (specialization)
+
+
+// ********************************* //
+// *** Increasing index sequence *** // 
+// ********************************* //
+// [Approach 1] works
+// idx_seq_generator<4>::type = idx_seq_generator<3,3> ::type
+//                            = idx_seq_generator<2,2,3> ::type
+//                            = idx_seq_generator<1,1,2,3> ::type
+//                            = idx_seq_generator<0,0,1,2,3> ::type <--- recursion
+//                            = idx_seq<0,1,2,3>                    <--- boundary condition (specialization)
 
 template<std::uint32_t N, std::uint32_t ...Ns> 
 struct idx_seq_generator
@@ -37,74 +39,73 @@ struct idx_seq_generator<0,Ns...>
     using type = idx_seq<Ns...>;          
 };
 
-// Approach 2 fails, it supposes to do :
-// (2) idx_seq_generator_failed<4>::type = idx_seq_generator_failed<4,0> ::type
-//                                       = idx_seq_generator_failed<4,0,1> ::type
-//                                       = idx_seq_generator_failed<4,0,1,2> ::type
-//                                       = idx_seq_generator_failed<4,0,1,2,3> ::type
-//                                       = idx_seq_generator_failed<4,0,1,2,3,4> ::type
-//                                       = idx_seq<0,1,2,3>       
-/* 
-
+// [Approach 2] fails
+// idx_seq_generator_failed<4>::type = idx_seq_generator_failed<4,0> ::type
+//                                   = idx_seq_generator_failed<4,0,1> ::type
+//                                   = idx_seq_generator_failed<4,0,1,2> ::type
+//                                   = idx_seq_generator_failed<4,0,1,2,3> ::type
+//                                   = idx_seq_generator_failed<4,0,1,2,3,4> ::type
+//                                   = idx_seq<0,1,2,3>       
+ 
 template<std::uint32_t N, std::uint32_t ...Ns> 
 struct idx_seq_generator_failed
 {
     using type = typename idx_seq_generator_failed<N,Ns...,sizeof...(Ns)>::type; // <--- compile OK
-};
-
+};  
+/*
 template<std::uint32_t N, std::uint32_t ...Ns> 
 struct idx_seq_generator_failed<N,Ns...,N> // <--- compile error here
 {
     using type = idx_seq<Ns...>; 
-};  
+};  */
 
-*/
-// Objective :
-// idx_seq_generator<4>::type ---> idx_seq<0,1,2,3>
-//
-// Approach 1 works, it supposes to do :
-// (1) rev_idx_seq_generator<4>::type = rev_idx_seq_generator<4,0> ::type
-//                                    = rev_idx_seq_generator<4,1,0> ::type
-//                                    = rev_idx_seq_generator<4,2,1,0> ::type
-//                                    = rev_idx_seq_generator<4,3,2,1,0> ::type 
-//                                    = rev_idx_seq_generator<4,4,3,2,1,0> ::type 
-//                                    = rev_idx_seq<3,2,1,0>
+
+
+// ******************************* //
+// *** Inverted index sequence *** //
+// ******************************* //
+// [Approach 1] works
+// inv_idx_seq_generator<4>::type = inv_idx_seq_generator<4,0> ::type
+//                                = inv_idx_seq_generator<4,1,0> ::type
+//                                = inv_idx_seq_generator<4,2,1,0> ::type
+//                                = inv_idx_seq_generator<4,3,2,1,0> ::type 
+//                                = inv_idx_seq_generator<4,4,3,2,1,0> ::type 
+//                                = rev_idx_seq<3,2,1,0>
 
 template<std::uint32_t N, std::uint32_t ...Ns> 
-struct rev_idx_seq_generator
+struct inv_idx_seq_generator
 {
-    using type = typename rev_idx_seq_generator<N, sizeof...(Ns), Ns...>::type;
+    using type = typename inv_idx_seq_generator<N, sizeof...(Ns), Ns...>::type;
 };
 
 template<std::uint32_t N, std::uint32_t ...Ns>
-struct rev_idx_seq_generator<N,N,Ns...>
+struct inv_idx_seq_generator<N,N,Ns...>
 {
     using type = idx_seq<Ns...>;    
 }; 
 
-// Approach 2 fails, it supposes to do :
-// (2) rev_idx_seq_generator<4>::type = rev_idx_seq_generator<4,0> ::type
-//                                    = rev_idx_seq_generator<4,1,0> ::type
-//                                    = rev_idx_seq_generator<4,2,1,0> ::type
-//                                    = rev_idx_seq_generator<4,3,2,1,0> ::type
-//                                    = rev_idx_seq<3,2,1,0>  
+// [Approach 2] fails
+// inv_idx_seq_generator<4>::type = inv_idx_seq_generator<4,0> ::type
+//                                = inv_idx_seq_generator<4,1,0> ::type
+//                                = inv_idx_seq_generator<4,2,1,0> ::type
+//                                = inv_idx_seq_generator<4,3,2,1,0> ::type
+//                                = rev_idx_seq<3,2,1,0>  
 /*
-
 template<std::uint32_t N, std::uint32_t ...Ns> 
-struct rev_idx_seq_generator
+struct inv_idx_seq_generator
 {
-    using type = typename rev_idx_seq_generator<N, sizeof...(Ns), Ns...>::type;
+    using type = typename inv_idx_seq_generator<N, sizeof...(Ns), Ns...>::type;
 };
 
 template<std::uint32_t N, std::uint32_t ...Ns>
-struct rev_idx_seq_generator<N,N-1,Ns...> // <--- in here : do not put formula, do not put oher para after para-pack
+struct inv_idx_seq_generator<N,N-1,Ns...> // <--- in here : do not put formula, do not put oher para after para-pack
 {
     using type = idx_seq<Ns...>;          // <--- in here : we can put formula, we can put oher para after para-pack
 };  
 */
 
-// ****************************************************************************************************************************** //
-// What does this do? 
+// ************************************************************************************* //
+// Making it more generic ...
 //
 // template<std::uint32_t N, std::uint32_t ...Ns> 
 // struct idx_seq_gen { using type = typename idx_seq_gen<N-A,N-B,Ns...>::type; };
@@ -114,13 +115,17 @@ struct rev_idx_seq_generator<N,N-1,Ns...> // <--- in here : do not put formula, 
 //                      = idx_seq_gen<N-3A, N-B-2A, N-B- A, N-B>::type
 //                      = idx_seq_gen<N-4A, N-B-3A, N-B-2A, N-B- A, N-B>::type
 //                      = idx_seq_gen<N-5A, N-B-4A, N-B-3A, N-B-2A, N-B-A, N-B>::type
-//                      = idx_seq          <N-B-4A, N-B-3A, N-B-2A, N-B-A, N-B>  by setting constraint on first template parameter
-//
+//                      = idx_seq          <N-B-4A, N-B-3A, N-B-2A, N-B-A, N-B>  
+//                                          ^--- by setting constraint on 1st parameter
 // A defines delta
 // B defines offset from N
-// ****************************************************************************************************************************** //
-// Lets construct an odd / even index sequence.
+// ************************************************************************************* //
 
+
+
+// ******************************** //
+// *** Alternate index sequence *** //
+// ******************************** //
 template<std::uint32_t N, std::uint32_t... Ns>
 struct alt_idx_seq_generator
 {
@@ -138,6 +143,7 @@ struct alt_idx_seq_generator<1,Ns...>
 {
     using type = idx_seq<Ns...>; 
 };
+
 
 
 // ******************************************* //
@@ -168,9 +174,12 @@ struct push_back_idx_seq<N, idx_seq<Ns...>>              // <===
 };
 
 
+
 // ***************************** //
 // *** Filter index sequence *** //
 // ***************************** //
+// Depends on push_front.
+//
 template<typename T> 
 struct filter_idx_seq // <--- This is interface.
 {
@@ -196,15 +205,13 @@ struct filter_idx_seq<idx_seq<N0,N1,Ns...>> // <--- This is implementation for r
 };
 
 
+
 // ****************************** //
 // *** Reverse index sequence *** //
 // ****************************** //
-// Note we are reversing a type to get an output type, so that :
-// 1. both are idx_seq
-// 2. they have their indices reversed
+// Depends on push_back.
+// Reversing index sequence is different from constructing an inverted index sequence.
 //
-// Thus, do not declare as : template<std::uint32_t...Ns> struct reverse_idx_seq {};
-
 template<typename T> 
 struct reverse_idx_seq
 {
@@ -223,3 +230,22 @@ struct reverse_idx_seq<idx_seq<N,Ns...>>
     using type = typename push_back_idx_seq<N, typename reverse_idx_seq<idx_seq<Ns...>>::type>::type;
 };
 
+
+
+// ********************************************************************************* //
+// For index sequence, we can get reversed type :
+//
+// reverse_idx_seq<idx_seq<1,2,3,4,5>>::type == idx_seq<5,4,3,2,1>
+//
+// For tuple, since it has members, we can get reversed type AND reversed object :
+// 
+// reverse_tuple<std::tuple<A,B,C,D,E>>::type == std::tuple<E,D,C,B,A>    <--- reverse the type 
+// reverse_tuple_object(t0) == t1                                         <--- reverse the type and the value 
+//
+// where t0 is an object of std::tuple<A,B,C,D,E>
+//       t1 is an object of std::tuple<E,D,C,B,A>
+//
+// Remark : reverse of tuple object is easier than reverse of tuple type, because :
+// 1. there is an input object (see tuple.h), we can operate with
+// 2. there is a factory std::make_tuple<>() which can resolve T... 
+// ********************************************************************************* //
