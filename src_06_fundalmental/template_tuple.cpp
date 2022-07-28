@@ -1,91 +1,51 @@
 #include<iostream>
-#include<utility> // std::index_sequence
-#include<tuple>
+#include<vector>
+#include"tuple.h"
 #include<assert.h> // for assert
 
-// For index sequence, we can get reversed type :
-//
-// reverse_idx_seq<idx_seq<1,2,3,4,5>>::type == idx_seq<5,4,3,2,1>
-//
-// For tuple, since it has members, we can get reversed type AND reversed object :
-// 
-// reverse_tuple<std::tuple<A,B,C,D,E>>::type == std::tuple<E,D,C,B,A>    <--- reverse the type 
-// reverse_tuple_object(t0) == t1                                         <--- reverse the type and the value <--- in fact this is easier, see remark
-//
-// where t0 is an object of std::tuple<A,B,C,D,E>
-//       t1 is an object of std::tuple<E,D,C,B,A>
-//
-// Remark : reverse of tuple object is easier than reverse of tuple type, because :
-// 1. there is an input object (like x below), we can operate with
-// 2. there is a factory called std::make_tuple<>() which can resolve T... 
-// 
 
-  
-template<typename T, std::size_t...Ns>
-auto make_shuffle_tuple(const T& x, std::index_sequence<Ns...> dummy)
+// ************ //
+// *** Test *** //
+// ************ //
+void test_template_tuple()
 {
-    return std::make_tuple(std::get<Ns>(x)...);
+    using T0 = std::tuple<char, std::uint32_t, std::string, std::pair<double, double>>;
+    using X0 = shuffle_tuple<T0,3,2,1>::type;
+    using Y0 = std::tuple<std::pair<double, double>, std::string, std::uint32_t>;
+    static_assert(std::is_same_v<X0,Y0>, "failed to shuffle_tuple");
+
+    using T1 = std::tuple<char, std::uint32_t, std::string, std::pair<double, double>>;
+    using X1 = shuffle_tuple2<T1, idx_seq<3,2,1>>::type;
+    using Y1 = std::tuple<std::pair<double, double>, std::string, std::uint32_t>;
+    static_assert(std::is_same_v<X1,Y1>, "failed to shuffle_tuple");
+
+    static_assert(std::is_same_v<std::tuple_size<T0>::type, std::integral_constant<std::size_t,4>>, "failed to tuple_size");
+    static_assert(std::is_same_v<std::tuple_size<X0>::type, std::integral_constant<std::size_t,3>>, "failed to tuple_size");
+    static_assert(std::is_same_v<std::tuple_size<Y0>::type, std::integral_constant<std::size_t,3>>, "failed to tuple_size");
+    static_assert(std::tuple_size<T0>::value == 4, "failed to tuple_size");
+    static_assert(std::tuple_size<X0>::value == 3, "failed to tuple_size");
+    static_assert(std::tuple_size<Y0>::value == 3, "failed to tuple_size");
+
+    using T2 = append_tuple<T0, double>::type;
+    using T3 = append_tuple<T2, double>::type;
+    using Y2 = std::tuple<char, std::uint32_t, std::string, std::pair<double, double>, double>;
+    using Y3 = std::tuple<char, std::uint32_t, std::string, std::pair<double, double>, double, double>;
+    static_assert(std::is_same_v<T2,Y2>, "failed to append_tuple");
+    static_assert(std::is_same_v<T3,Y3>, "failed to append_tuple");
+
+    using T4 = std::tuple<char, std::uint32_t, std::string, std::pair<double, double>, std::vector<double>, double>;
+    using T5 = reverse_tuple<T4>::type;
+    using T6 = reverse_tuple<T5>::type;
+    static_assert(std::is_same_v<T5,std::tuple<double, std::vector<double>, std::pair<double, double>, std::string, std::uint32_t, char>>, "failed to reverse_tuple");
+    static_assert(std::is_same_v<T6,std::tuple<char, std::uint32_t, std::string, std::pair<double, double>, std::vector<double>, double>>, "failed to reverse_tuple");
+    static_assert(std::is_same_v<T4,T6>, "failed to reverse_tuple");
+
+    using T7 = reverse_tuple<T4>::type;
+    using T8 = reverse_tuple<T7>::type;
+    static_assert(std::is_same_v<T7,std::tuple<double, std::vector<double>, std::pair<double, double>, std::string, std::uint32_t, char>>, "failed to reverse_tuple");
+    static_assert(std::is_same_v<T8,std::tuple<char, std::uint32_t, std::string, std::pair<double, double>, std::vector<double>, double>>, "failed to reverse_tuple");
+    static_assert(std::is_same_v<T4,T8>, "failed to reverse_tuple");
 }
-
-template<typename T, std::size_t...Ns>
-auto make_reverse_tuple_impl(const T& x, std::index_sequence<Ns...> dummy)
-{
-    return std::make_tuple(std::get<std::tuple_size<T>::value-1-Ns>(x)...); // BUG : Don't forget minus one, otherwise it goes out of tuple range
-}
-
-template<typename T>
-auto make_reverse_tuple(const T& x)
-{
-    return make_reverse_tuple_impl(x, std::make_index_sequence<std::tuple_size<T>::value>{}); 
-}
-
-
-// ****************************** //
-// *** Tuple size and element *** //
-// ****************************** //
-template<typename T>
-struct tuple_size 
-{
-    using type = std::integral_constant<std::uint32_t, 0>;
-    static const std::uint32_t value = type::value;
-};
-
-template<typename...Ts>
-struct tuple_size<std::tuple<Ts...>>
-{
-    using type = std::integral_constant<std::uint32_t, sizeof...(Ts)>;
-    static const std::uint32_t value = type::value;
-};
-
-template<std::uint32_t N, typename T> // <--- interface
-struct tuple_element 
-{
-};
-
-template<typename T, typename...Ts> // <--- implementation : boundary condition
-struct tuple_element<0, std::tuple<T,Ts...>>
-{
-    using type = T;
-};
-
-template<std::uint32_t N, typename T, typename...Ts> // <--- implementation : recursion
-struct tuple_element<N, std::tuple<T,Ts...>>
-{
-    using type = tuple_element<N-1, std::tuple<Ts...>>::type;
-};
-
-// Another approach 
-template<std::uint32_t N, typename T> 
-struct tuple_element2
-{
-    using type = std::remove_cvref_t<decltype(std::get<N>(std::declval<T>()))>;
-//  using type =                     decltype(std::get<N>(std::declval<T>())); // BUG : Does not work !!!
-};
-
-// ***************** //
-// *** Tuple cat *** //
-// ***************** //
-
 
 void test_template_tuple2()
 {
@@ -152,4 +112,12 @@ void test_template_tuple2()
     static_assert(std::is_same_v<Y2, std::string>,              "failed to tuple_element");
     static_assert(std::is_same_v<Y3, std::pair<double,double>>, "failed to tuple_element");
     static_assert(std::is_same_v<Y4, double>,                   "failed to tuple_element");
+
+    // *** tuple cat *** //
+    using T6 = std::tuple<char, std::uint32_t, std::string, std::pair<double, double>>;
+    using T7 = std::tuple<char, std::uint32_t, std::string>;
+    using T8 = tuple_cat<T6,T7>::type;
+    using T9 = std::tuple<char, std::uint32_t, std::string, std::pair<double, double>, char, std::uint32_t, std::string>;
+    static_assert(std::is_same_v<T8,T9>, "failed to tuple_cat");
+
 }
