@@ -7,6 +7,41 @@
 // ************ //
 // *** Test *** //
 // ************ //
+void test_size_and_element()
+{
+    using T0 = std::tuple<char, std::uint32_t, std::string, std::pair<double,double>, double>;
+    using T1 = std::tuple<char, std::uint32_t, std::string, std::pair<double,double>>;
+    using T2 = tuple_size<T0>::type;
+    using T3 = tuple_size<T1>::type;
+
+    static_assert(std::is_same_v<T2, std::integral_constant<std::uint32_t,5>>, "failed to tuple_size");
+    static_assert(std::is_same_v<T3, std::integral_constant<std::uint32_t,4>>, "failed to tuple_size");
+
+    using X0 = tuple_element<0,T0>::type;
+    using X1 = tuple_element<1,T0>::type;
+    using X2 = tuple_element<2,T0>::type;
+    using X3 = tuple_element<3,T0>::type;
+    using X4 = tuple_element<4,T0>::type;
+
+    static_assert(std::is_same_v<X0, char>,                     "failed to tuple_element");
+    static_assert(std::is_same_v<X1, std::uint32_t>,            "failed to tuple_element");
+    static_assert(std::is_same_v<X2, std::string>,              "failed to tuple_element");
+    static_assert(std::is_same_v<X3, std::pair<double,double>>, "failed to tuple_element");
+    static_assert(std::is_same_v<X4, double>,                   "failed to tuple_element");
+
+    using Y0 = tuple_element2<0,T0>::type;
+    using Y1 = tuple_element2<1,T0>::type;
+    using Y2 = tuple_element2<2,T0>::type;
+    using Y3 = tuple_element2<3,T0>::type;
+    using Y4 = tuple_element2<4,T0>::type;
+
+    static_assert(std::is_same_v<Y0, char>,                     "failed to tuple_element");
+    static_assert(std::is_same_v<Y1, std::uint32_t>,            "failed to tuple_element");
+    static_assert(std::is_same_v<Y2, std::string>,              "failed to tuple_element");
+    static_assert(std::is_same_v<Y3, std::pair<double,double>>, "failed to tuple_element");
+    static_assert(std::is_same_v<Y4, double>,                   "failed to tuple_element");
+}
+
 void test_shuffle()
 {
     using T   = std::tuple<char, std::uint32_t, std::string, std::pair<double,double>, double>;
@@ -78,42 +113,6 @@ void test_reverse()
     assert(std::get<2>(t) == std::get<3>(x5));
 }
 
-
-void test_size_and_element()
-{
-    using T0 = std::tuple<char, std::uint32_t, std::string, std::pair<double,double>, double>;
-    using T1 = std::tuple<char, std::uint32_t, std::string, std::pair<double,double>>;
-    using T2 = tuple_size<T0>::type;
-    using T3 = tuple_size<T1>::type;
-
-    static_assert(std::is_same_v<T2, std::integral_constant<std::uint32_t,5>>, "failed to tuple_size");
-    static_assert(std::is_same_v<T3, std::integral_constant<std::uint32_t,4>>, "failed to tuple_size");
-
-    using X0 = tuple_element<0,T0>::type;
-    using X1 = tuple_element<1,T0>::type;
-    using X2 = tuple_element<2,T0>::type;
-    using X3 = tuple_element<3,T0>::type;
-    using X4 = tuple_element<4,T0>::type;
-
-    static_assert(std::is_same_v<X0, char>,                     "failed to tuple_element");
-    static_assert(std::is_same_v<X1, std::uint32_t>,            "failed to tuple_element");
-    static_assert(std::is_same_v<X2, std::string>,              "failed to tuple_element");
-    static_assert(std::is_same_v<X3, std::pair<double,double>>, "failed to tuple_element");
-    static_assert(std::is_same_v<X4, double>,                   "failed to tuple_element");
-
-    using Y0 = tuple_element2<0,T0>::type;
-    using Y1 = tuple_element2<1,T0>::type;
-    using Y2 = tuple_element2<2,T0>::type;
-    using Y3 = tuple_element2<3,T0>::type;
-    using Y4 = tuple_element2<4,T0>::type;
-
-    static_assert(std::is_same_v<Y0, char>,                     "failed to tuple_element");
-    static_assert(std::is_same_v<Y1, std::uint32_t>,            "failed to tuple_element");
-    static_assert(std::is_same_v<Y2, std::string>,              "failed to tuple_element");
-    static_assert(std::is_same_v<Y3, std::pair<double,double>>, "failed to tuple_element");
-    static_assert(std::is_same_v<Y4, double>,                   "failed to tuple_element");
-}
-
 void test_cat()
 {
     using T0  = std::tuple<char, std::uint32_t, std::string, std::pair<double, double>>;
@@ -125,10 +124,10 @@ void test_cat()
 
 void test_template_tuple()
 {
+    test_size_and_element();
     test_shuffle();
     test_append();
     test_reverse();
-    test_size_and_element();
     test_cat();
 }
 

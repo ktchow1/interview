@@ -16,6 +16,56 @@
 
 
 
+// ****************** //
+// *** Tuple size *** //
+// ****************** //
+template<typename TUP>
+struct tuple_size 
+{
+    using type = std::integral_constant<std::uint32_t, 0>;
+    static const std::uint32_t value = type::value;
+};
+
+template<typename...Ts>
+struct tuple_size<std::tuple<Ts...>>
+{
+    using type = std::integral_constant<std::uint32_t, sizeof...(Ts)>;
+    static const std::uint32_t value = type::value;
+};
+
+
+
+// ********************* //
+// *** Tuple element *** //
+// ********************* //
+// *** Method 1 *** //
+template<std::uint32_t N, typename TUP> // <--- interface
+struct tuple_element 
+{
+};
+
+template<typename T, typename...Ts> // <--- implementation : boundary condition 
+struct tuple_element<0, std::tuple<T,Ts...>>
+{
+    using type = T;
+};
+
+template<std::uint32_t N, typename T, typename...Ts> // <--- implementation : recursion
+struct tuple_element<N, std::tuple<T,Ts...>>
+{
+    using type = tuple_element<N-1, std::tuple<Ts...>>::type;
+};
+
+// *** Method 2 *** //
+template<std::uint32_t N, typename TUP> 
+struct tuple_element2
+{
+    using type = std::remove_cvref_t<decltype(std::get<N>(std::declval<TUP>()))>;
+//  using type =                     decltype(std::get<N>(std::declval<TUP>())); // BUG : Does not work !!!
+};
+
+
+
 // ********************* //
 // *** Shuffle tuple *** //
 // ********************* //
@@ -110,56 +160,6 @@ auto make_reverse_tuple(const TUP& x)
 {
     return make_reverse_tuple_impl(x, std::make_index_sequence<std::tuple_size<TUP>::value>{}); 
 }
-
-
-
-// ****************** //
-// *** Tuple size *** //
-// ****************** //
-template<typename TUP>
-struct tuple_size 
-{
-    using type = std::integral_constant<std::uint32_t, 0>;
-    static const std::uint32_t value = type::value;
-};
-
-template<typename...Ts>
-struct tuple_size<std::tuple<Ts...>>
-{
-    using type = std::integral_constant<std::uint32_t, sizeof...(Ts)>;
-    static const std::uint32_t value = type::value;
-};
-
-
-
-// ********************* //
-// *** Tuple element *** //
-// ********************* //
-// *** Method 1 *** //
-template<std::uint32_t N, typename TUP> // <--- interface
-struct tuple_element 
-{
-};
-
-template<typename T, typename...Ts> // <--- implementation : boundary condition 
-struct tuple_element<0, std::tuple<T,Ts...>>
-{
-    using type = T;
-};
-
-template<std::uint32_t N, typename T, typename...Ts> // <--- implementation : recursion
-struct tuple_element<N, std::tuple<T,Ts...>>
-{
-    using type = tuple_element<N-1, std::tuple<Ts...>>::type;
-};
-
-// *** Method 2 *** //
-template<std::uint32_t N, typename TUP> 
-struct tuple_element2
-{
-    using type = std::remove_cvref_t<decltype(std::get<N>(std::declval<TUP>()))>;
-//  using type =                     decltype(std::get<N>(std::declval<TUP>())); // BUG : Does not work !!!
-};
 
 
 
