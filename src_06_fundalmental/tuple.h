@@ -69,6 +69,10 @@ struct tuple_element2
 // ********************* //
 // *** Shuffle tuple *** //
 // ********************* //
+// Slight difference between method 1&2
+// 1. shuffle_tuple         <TUP,1,3,5,7>
+// 2. shuffle_tuple2<idx_seq<TUP,1,3,5,7>>
+  
 // *** Method 1 *** //
 template<typename TUP, std::size_t...Ns>
 struct shuffle_tuple
@@ -77,13 +81,13 @@ struct shuffle_tuple
 };
 
 // *** Method 2 *** //
-template<typename TUP, typename IS> 
+template<typename TUP, typename T> 
 struct shuffle_tuple2
 {
 };
 
 template<typename TUP, std::size_t...Ns> 
-struct shuffle_tuple2<TUP, idx_seq<Ns...>> // Remark A : convert from dimension <TUP,IS> to <TUP,Ns...>
+struct shuffle_tuple2<TUP, idx_seq<Ns...>> // Remark A : convert from dimension <TUP,T> to <TUP,Ns...>
 {
     using type = std::tuple<typename std::tuple_element<Ns,TUP>::type...>; 
 };
@@ -100,22 +104,34 @@ auto make_shuffle_tuple(const TUP& x, idx_seq<Ns...> dummy)
 // ******************** //
 // *** Append tuple *** //
 // ******************** //
-template<typename TUP, typename T> 
+template<typename TUP, typename...Ts> 
 struct append_tuple
 {
 };
 
-template<typename...Ts, typename T>
-struct append_tuple<std::tuple<Ts...>,T>
+template<typename...TUP_Ts, typename...Ts>
+struct append_tuple<std::tuple<TUP_Ts...>,Ts...>
 {
-    using type = std::tuple<Ts...,T>;
+    using type = std::tuple<TUP_Ts...,Ts...>;
 };
 
-// template<typename...Ts, typename T>
-// auto make_append_tuple(const std::tuple<Ts...>& tup, const T& x)
-// {
-//     return std::make_tuple(std::forward<Ts>(xs)..., x);
-// }
+// *** Factory *** //
+// The following technique is useful in append / reverse / cat :
+// - we have TUP   in the interface
+// - we need Ns... in the implementation
+// - introduce a helper to do conversion
+//
+template<typename TUP, std::size_t...Ns, typename...Ts>
+auto make_append_tuple_helper(const TUP& tup, idx_seq<Ns...> dummy, const Ts&...xs) 
+{
+    return std::make_tuple(std::get<Ns>(tup)..., xs...);
+}
+
+template<typename TUP, typename...Ts>
+auto make_append_tuple(const TUP& tup, const Ts&...xs) 
+{
+    return make_append_tuple_helper(tup, typename idx_seq_generator<std::tuple_size<TUP>::value>::type{}, xs...);
+}
 
 
 
