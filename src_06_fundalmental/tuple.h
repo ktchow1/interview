@@ -77,7 +77,7 @@ struct tuple_element2
 template<typename TUP, std::size_t...Ns>
 struct shuffle_tuple
 {
-    using type = std::tuple<typename std::tuple_element<Ns,TUP>::type...>; // BUG : Don't forget "::type"
+    using type = std::tuple<typename std::tuple_element<Ns,TUP>::type...>; 
 };
 
 // *** Method 2 *** //
@@ -165,16 +165,16 @@ struct reverse_tuple2<std::tuple<T,Ts...>>
 };
 
 // *** Factory *** //
-template<typename TUP, std::size_t...Ns>
-auto make_reverse_tuple_impl(const TUP& x, idx_seq<Ns...> dummy)
+template<typename TUP, std::size_t...Ns> // BUG : Don't use std::uint32_t instead of std::size_t, as std::tuple_size returns the latter
+auto make_reverse_tuple_helper(const TUP& tup, idx_seq<Ns...> dummy)
 {
-    return std::make_tuple(std::get<std::tuple_size<TUP>::value-1-Ns>(x)...); // BUG : Don't forget minus one, otherwise it goes out of tuple range
+    return std::make_tuple(std::get<std::tuple_size<TUP>::value-1-Ns>(tup)...); // BUG : Don't forget minus one, otherwise it goes out of tuple range
 }
 
 template<typename TUP>
-auto make_reverse_tuple(const TUP& x)
+auto make_reverse_tuple(const TUP& tup)
 {
-    return make_reverse_tuple_impl(x, typename idx_seq_generator<std::tuple_size<TUP>::value>::type{}); 
+    return make_reverse_tuple_helper(tup, typename idx_seq_generator<std::tuple_size<TUP>::value>::type{}); // BUG : Don't forget "typename" and "::type" 
 }
 
 
@@ -199,9 +199,22 @@ struct tuple_cat<TUP0, std::tuple<T,Ts...>>
     using type = tuple_cat<typename append_tuple<TUP0,T>::type, std::tuple<Ts...>>::type;
 }; 
 
+// *** Factory *** //
+template<typename TUP0, typename TUP1, std::size_t...Ns> 
+auto make_tuple_cat_helper(const TUP0& tup0, const TUP1& tup1, idx_seq<Ns...> dummy)
+{
+    return make_append_tuple(tup0, std::get<Ns>(tup1)...);
+}
+
+template<typename TUP0, typename TUP1>  
+auto make_tuple_cat(const TUP0& tup0, const TUP1& tup1)
+{
+    return make_tuple_cat_helper(tup0, tup1, typename idx_seq_generator<std::tuple_size<TUP1>::value>::type{});
+}
+
 
 
 // ******************* //
 // *** Tuple apply *** //
 // ******************* //
-
+// There is no struct traits for this part.

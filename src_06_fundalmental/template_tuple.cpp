@@ -69,45 +69,52 @@ void test_shuffle()
 
 void test_append()
 {
-    using T    = std::tuple<char, std::uint32_t, std::string, std::pair<double,double>>;
-    using X0   = append_tuple<T,  double>::type;
-    using X1   = append_tuple<X0, double>::type;
-    using ANS0 = std::tuple<char, std::uint32_t, std::string, std::pair<double,double>, double>;
-    using ANS1 = std::tuple<char, std::uint32_t, std::string, std::pair<double,double>, double, double>;
+    using T    = std::tuple<char, std::uint32_t, std::string, std::pair<double,double>, double>;
+    using X0   = append_tuple<T,  std::string, char>::type;
+    using X1   = append_tuple<X0, std::string, char>::type;
+    using ANS0 = std::tuple<char, std::uint32_t, std::string, std::pair<double,double>, double, std::string, char>;
+    using ANS1 = std::tuple<char, std::uint32_t, std::string, std::pair<double,double>, double, std::string, char, std::string, char>;
 
     static_assert(std::is_same_v<X0, ANS0>, "failed to append_tuple");
     static_assert(std::is_same_v<X1, ANS1>, "failed to append_tuple");
 
     // *** Factory *** //
+    auto  t    = T{'a', 12345, "wxyz", std::make_pair(3.1415, 1.4141), 0.98765};
+    auto  x2   = make_append_tuple(t, std::string{"hello-world"});
+    auto  x3   = make_append_tuple(t, std::string{"hello-world"}, 'A', 'B', 'C');
+    using ANS2 = std::tuple<char, std::uint32_t, std::string, std::pair<double,double>, double, std::string>;
+    using ANS3 = std::tuple<char, std::uint32_t, std::string, std::pair<double,double>, double, std::string, char, char, char>;
+    static_assert(std::is_same_v<decltype(x2), ANS2>, "failed to make_append_tuple");
+    static_assert(std::is_same_v<decltype(x3), ANS3>, "failed to make_append_tuple");
 }
 
 void test_reverse()
-{
+{    
     using T   = std::tuple<char, std::uint32_t, std::string, std::pair<double,double>, std::vector<double>, double>;
     using X0  = reverse_tuple<T >::type;
     using X1  = reverse_tuple<X0>::type;
+    using X2  = reverse_tuple2<T >::type;
+    using X3  = reverse_tuple2<X2>::type;
     using ANS = std::tuple<double, std::vector<double>, std::pair<double,double>, std::string, std::uint32_t, char>;
+
     static_assert(std::is_same_v<X0, ANS>, "failed to reverse_tuple");
     static_assert(std::is_same_v<X1, T>,   "failed to reverse_tuple");
-
-    using X2 = reverse_tuple2<T >::type;
-    using X3 = reverse_tuple2<X2>::type;
     static_assert(std::is_same_v<X2, ANS>, "failed to reverse_tuple2");
     static_assert(std::is_same_v<X3, T>,   "failed to reverse_tuple2");
 
     // *** Factory *** //
     auto  t  = T{'a', 12345, "wxyz", std::make_pair(3.1415, 1.4141), std::vector<double>{0.1,0.2,0.3,0.4}, 0.98765};
-    auto  x4 = make_reverse_tuple_impl(t, idx_seq<0,1,3,4,5>{}); 
+    auto  x4 = make_reverse_tuple_helper(t, idx_seq<0,1,3,4,5>{}); 
     auto  x5 = make_reverse_tuple(t); 
     using T4 = std::tuple<double, std::vector<double>, std::string, std::uint32_t, char>;
     using T5 = ANS;
 
-    static_assert(std::is_same_v<T4, decltype(x4)>, "failed to make_shuffle_tuple");
+    static_assert(std::is_same_v<decltype(x4), T4>, "failed to make_reverse_tuple");
     assert(std::get<0>(t) == std::get<4>(x4));
     assert(std::get<1>(t) == std::get<3>(x4));
     assert(std::get<2>(t) == std::get<2>(x4));
 
-    static_assert(std::is_same_v<T5, decltype(x5)>, "failed to make_shuffle_tuple");
+    static_assert(std::is_same_v<decltype(x5), T5>, "failed to make_reverse_tuple");
     assert(std::get<0>(t) == std::get<5>(x5));
     assert(std::get<1>(t) == std::get<4>(x5));
     assert(std::get<2>(t) == std::get<3>(x5));
@@ -120,6 +127,19 @@ void test_cat()
     using T2  = tuple_cat<T0,T1>::type;
     using ANS = std::tuple<char, std::uint32_t, std::string, std::pair<double, double>, char, std::uint32_t, std::string>;
     static_assert(std::is_same_v<T2, ANS>, "failed to tuple_cat");
+
+    // *** Factory *** //
+    auto  x0 = T0{'a', 12345, "wxyz", std::make_pair(3.1415, 1.4141)};
+    auto  x1 = T1{'a', 12345, "wxyz"};
+    auto  x2 = make_tuple_cat(x0, x1);
+
+    static_assert(std::is_same_v<decltype(x2), ANS>, "failed to make_tuple_cat");
+    assert(std::get<0>(x0) == std::get<0>(x2));
+    assert(std::get<1>(x0) == std::get<1>(x2));
+    assert(std::get<2>(x0) == std::get<2>(x2));
+    assert(std::get<0>(x1) == std::get<4>(x2));
+    assert(std::get<1>(x1) == std::get<5>(x2));
+    assert(std::get<2>(x1) == std::get<6>(x2));
 }
 
 void test_template_tuple()
