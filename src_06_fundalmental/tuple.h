@@ -22,15 +22,15 @@
 template<typename TUP>
 struct tuple_size 
 {
-    using type = std::integral_constant<std::uint32_t, 0>;
-    static const std::uint32_t value = type::value;
+    using type = std::integral_constant<std::size_t, 0>;
+    static const std::size_t value = type::value;
 };
 
 template<typename...Ts>
 struct tuple_size<std::tuple<Ts...>>
 {
-    using type = std::integral_constant<std::uint32_t, sizeof...(Ts)>;
-    static const std::uint32_t value = type::value;
+    using type = std::integral_constant<std::size_t, sizeof...(Ts)>;
+    static const std::size_t value = type::value;
 };
 
 
@@ -39,7 +39,7 @@ struct tuple_size<std::tuple<Ts...>>
 // *** Tuple element *** //
 // ********************* //
 // *** Method 1 *** //
-template<std::uint32_t N, typename TUP> // <--- interface
+template<std::size_t N, typename TUP> // <--- interface
 struct tuple_element 
 {
 };
@@ -50,14 +50,14 @@ struct tuple_element<0, std::tuple<T,Ts...>>
     using type = T;
 };
 
-template<std::uint32_t N, typename T, typename...Ts> // <--- implementation : recursion
+template<std::size_t N, typename T, typename...Ts> // <--- implementation : recursion
 struct tuple_element<N, std::tuple<T,Ts...>>
 {
     using type = tuple_element<N-1, std::tuple<Ts...>>::type;
 };
 
 // *** Method 2 *** //
-template<std::uint32_t N, typename TUP> 
+template<std::size_t N, typename TUP> 
 struct tuple_element2
 {
     using type = std::remove_cvref_t<decltype(std::get<N>(std::declval<TUP>()))>;
@@ -70,7 +70,7 @@ struct tuple_element2
 // *** Shuffle tuple *** //
 // ********************* //
 // *** Method 1 *** //
-template<typename TUP, std::uint32_t...Ns>
+template<typename TUP, std::size_t...Ns>
 struct shuffle_tuple
 {
     using type = std::tuple<typename std::tuple_element<Ns,TUP>::type...>; // BUG : Don't forget "::type"
@@ -82,7 +82,7 @@ struct shuffle_tuple2
 {
 };
 
-template<typename TUP, std::uint32_t...Ns> 
+template<typename TUP, std::size_t...Ns> 
 struct shuffle_tuple2<TUP, idx_seq<Ns...>> // Remark A : convert from dimension <TUP,IS> to <TUP,Ns...>
 {
     using type = std::tuple<typename std::tuple_element<Ns,TUP>::type...>; 
@@ -90,7 +90,7 @@ struct shuffle_tuple2<TUP, idx_seq<Ns...>> // Remark A : convert from dimension 
 
 // *** Factory *** //
 template<typename TUP, std::size_t...Ns>
-auto make_shuffle_tuple(const TUP& x, std::index_sequence<Ns...> dummy)
+auto make_shuffle_tuple(const TUP& x, idx_seq<Ns...> dummy)
 {
     return std::make_tuple(std::get<Ns>(x)...);
 }
@@ -150,7 +150,7 @@ struct reverse_tuple2<std::tuple<T,Ts...>>
 
 // *** Factory *** //
 template<typename TUP, std::size_t...Ns>
-auto make_reverse_tuple_impl(const TUP& x, std::index_sequence<Ns...> dummy)
+auto make_reverse_tuple_impl(const TUP& x, idx_seq<Ns...> dummy)
 {
     return std::make_tuple(std::get<std::tuple_size<TUP>::value-1-Ns>(x)...); // BUG : Don't forget minus one, otherwise it goes out of tuple range
 }
@@ -158,7 +158,7 @@ auto make_reverse_tuple_impl(const TUP& x, std::index_sequence<Ns...> dummy)
 template<typename TUP>
 auto make_reverse_tuple(const TUP& x)
 {
-    return make_reverse_tuple_impl(x, std::make_index_sequence<std::tuple_size<TUP>::value>{}); 
+    return make_reverse_tuple_impl(x, typename idx_seq_generator<std::tuple_size<TUP>::value>::type{}); 
 }
 
 

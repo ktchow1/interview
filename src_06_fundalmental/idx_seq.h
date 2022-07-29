@@ -11,7 +11,7 @@
 // 3. As the pack expands, the tail remains unchanged, see the illustrative comment below.
 
 
-template<std::uint32_t ...Ns> struct idx_seq 
+template<std::size_t ...Ns> struct idx_seq 
 {
 };
 
@@ -27,13 +27,13 @@ template<std::uint32_t ...Ns> struct idx_seq
 //                            = idx_seq_generator<0,0,1,2,3> ::type <--- recursion
 //                            = idx_seq<0,1,2,3>                    <--- boundary condition (specialization)
 
-template<std::uint32_t N, std::uint32_t ...Ns> 
+template<std::size_t N, std::size_t ...Ns> 
 struct idx_seq_generator
 {
     using type = typename idx_seq_generator<N-1,N-1,Ns...>::type;
 };
 
-template<std::uint32_t ...Ns> 
+template<std::size_t ...Ns> 
 struct idx_seq_generator<0,Ns...>
 {
     using type = idx_seq<Ns...>;          
@@ -47,13 +47,13 @@ struct idx_seq_generator<0,Ns...>
 //                                   = idx_seq_generator_failed<4,0,1,2,3,4> ::type
 //                                   = idx_seq<0,1,2,3>       
  
-template<std::uint32_t N, std::uint32_t ...Ns> 
+template<std::size_t N, std::size_t ...Ns> 
 struct idx_seq_generator_failed
 {
     using type = typename idx_seq_generator_failed<N,Ns...,sizeof...(Ns)>::type; // <--- compile OK
 };  
 /*
-template<std::uint32_t N, std::uint32_t ...Ns> 
+template<std::size_t N, std::size_t ...Ns> 
 struct idx_seq_generator_failed<N,Ns...,N> // <--- compile error here
 {
     using type = idx_seq<Ns...>; 
@@ -72,13 +72,13 @@ struct idx_seq_generator_failed<N,Ns...,N> // <--- compile error here
 //                                = inv_idx_seq_generator<4,4,3,2,1,0> ::type 
 //                                = rev_idx_seq<3,2,1,0>
 
-template<std::uint32_t N, std::uint32_t ...Ns> 
+template<std::size_t N, std::size_t ...Ns> 
 struct inv_idx_seq_generator
 {
     using type = typename inv_idx_seq_generator<N, sizeof...(Ns), Ns...>::type;
 };
 
-template<std::uint32_t N, std::uint32_t ...Ns>
+template<std::size_t N, std::size_t ...Ns>
 struct inv_idx_seq_generator<N,N,Ns...>
 {
     using type = idx_seq<Ns...>;    
@@ -91,13 +91,13 @@ struct inv_idx_seq_generator<N,N,Ns...>
 //                                = inv_idx_seq_generator<4,3,2,1,0> ::type
 //                                = rev_idx_seq<3,2,1,0>  
 /*
-template<std::uint32_t N, std::uint32_t ...Ns> 
+template<std::size_t N, std::size_t ...Ns> 
 struct inv_idx_seq_generator
 {
     using type = typename inv_idx_seq_generator<N, sizeof...(Ns), Ns...>::type;
 };
 
-template<std::uint32_t N, std::uint32_t ...Ns>
+template<std::size_t N, std::size_t ...Ns>
 struct inv_idx_seq_generator<N,N-1,Ns...> // <--- in here : do not put formula, do not put oher para after para-pack
 {
     using type = idx_seq<Ns...>;          // <--- in here : we can put formula, we can put oher para after para-pack
@@ -107,7 +107,7 @@ struct inv_idx_seq_generator<N,N-1,Ns...> // <--- in here : do not put formula, 
 // ************************************************************************************* //
 // Making it more generic ...
 //
-// template<std::uint32_t N, std::uint32_t ...Ns> 
+// template<std::size_t N, std::size_t ...Ns> 
 // struct idx_seq_gen { using type = typename idx_seq_gen<N-A,N-B,Ns...>::type; };
 //
 // idx_seq_gen<N>::type = idx_seq_gen<N- A, N-B>::type
@@ -126,19 +126,19 @@ struct inv_idx_seq_generator<N,N-1,Ns...> // <--- in here : do not put formula, 
 // ******************************** //
 // *** Alternate index sequence *** //
 // ******************************** //
-template<std::uint32_t N, std::uint32_t... Ns>
+template<std::size_t N, std::size_t... Ns>
 struct alt_idx_seq_generator
 {
     using type = typename alt_idx_seq_generator<N-2,N-2,Ns...>::type;
 };
 
-template<std::uint32_t... Ns>
+template<std::size_t... Ns>
 struct alt_idx_seq_generator<0,Ns...> 
 {
     using type = idx_seq<Ns...>; 
 };
 
-template<std::uint32_t... Ns>
+template<std::size_t... Ns>
 struct alt_idx_seq_generator<1,Ns...> 
 {
     using type = idx_seq<Ns...>; 
@@ -149,25 +149,25 @@ struct alt_idx_seq_generator<1,Ns...>
 // ******************************************* //
 // *** Push front & back to index sequence *** //
 // ******************************************* //
-template<std::uint32_t N, typename T> 
+template<std::size_t N, typename T> 
 struct push_front_idx_seq  
 {    
     // In general, T is not appendable. 
 };  
    
-template<std::uint32_t N, std::uint32_t...Ns> 
+template<std::size_t N, std::size_t...Ns> 
 struct push_front_idx_seq<N, idx_seq<Ns...>> 
 {
     using type = idx_seq<N,Ns...>;
 };
 
-template<std::uint32_t N, typename T> // Need to include N & T, must be more generic than specialization.
+template<std::size_t N, typename T> // Need to include N & T, must be more generic than specialization.
 struct push_back_idx_seq                                       //
 {                                                             //
     // In general, T is not appendable.                      //         
 };                                                          //
                                                            //
-template<std::uint32_t N, std::uint32_t...Ns>             //
+template<std::size_t N, std::size_t...Ns>                 //
 struct push_back_idx_seq<N, idx_seq<Ns...>>              // <===
 {
     using type = idx_seq<Ns...,N>;
@@ -192,13 +192,13 @@ struct filter_idx_seq<idx_seq<>> // <--- This is implementation for boundary cas
     using type = idx_seq<>; 
 };
 
-template<std::uint32_t N0>
+template<std::size_t N0>
 struct filter_idx_seq<idx_seq<N0>> // <--- This is implementation for boundary case.
 {
     using type = idx_seq<N0>;
 };
 
-template<std::uint32_t N0, std::uint32_t N1, std::uint32_t...Ns>
+template<std::size_t N0, std::size_t N1, std::size_t...Ns>
 struct filter_idx_seq<idx_seq<N0,N1,Ns...>> // <--- This is implementation for recursion.
 {
     using type = typename push_front_idx_seq<N0, typename filter_idx_seq<idx_seq<Ns...>>::type>::type;
@@ -224,7 +224,7 @@ struct reverse_idx_seq<idx_seq<>>
     using type = idx_seq<>; 
 };
 
-template<std::uint32_t N, std::uint32_t...Ns>
+template<std::size_t N, std::size_t...Ns>
 struct reverse_idx_seq<idx_seq<N,Ns...>>
 {
     using type = typename push_back_idx_seq<N, typename reverse_idx_seq<idx_seq<Ns...>>::type>::type;

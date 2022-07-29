@@ -14,8 +14,8 @@ void test_size_and_element()
     using T2 = tuple_size<T0>::type;
     using T3 = tuple_size<T1>::type;
 
-    static_assert(std::is_same_v<T2, std::integral_constant<std::uint32_t,5>>, "failed to tuple_size");
-    static_assert(std::is_same_v<T3, std::integral_constant<std::uint32_t,4>>, "failed to tuple_size");
+    static_assert(std::is_same_v<T2, std::integral_constant<std::size_t,5>>, "failed to tuple_size");
+    static_assert(std::is_same_v<T3, std::integral_constant<std::size_t,4>>, "failed to tuple_size");
 
     using X0 = tuple_element<0,T0>::type;
     using X1 = tuple_element<1,T0>::type;
@@ -60,7 +60,7 @@ void test_shuffle()
 
     // *** Factory *** //
     auto t  = T{'a', 12345, "wxyz", std::make_pair(3.1415, 1.4141), 0.98765};
-    auto x2 = make_shuffle_tuple(t, std::index_sequence<3,2,1>{}); // remember to construct an object here
+    auto x2 = make_shuffle_tuple(t, idx_seq<3,2,1>{}); // remember to construct an object here
 
     static_assert(std::is_same_v<decltype(x2),ANS>, "failed to make_shuffle_tuple");
     assert(std::get<1>(t) == std::get<2>(x2));
@@ -97,7 +97,7 @@ void test_reverse()
 
     // *** Factory *** //
     auto  t  = T{'a', 12345, "wxyz", std::make_pair(3.1415, 1.4141), std::vector<double>{0.1,0.2,0.3,0.4}, 0.98765};
-    auto  x4 = make_reverse_tuple_impl(t, std::index_sequence<0,1,3,4,5>{}); 
+    auto  x4 = make_reverse_tuple_impl(t, idx_seq<0,1,3,4,5>{}); 
     auto  x5 = make_reverse_tuple(t); 
     using T4 = std::tuple<double, std::vector<double>, std::string, std::uint32_t, char>;
     using T5 = ANS;
