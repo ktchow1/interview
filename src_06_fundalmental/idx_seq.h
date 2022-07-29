@@ -149,6 +149,9 @@ struct alt_idx_seq_generator<1,Ns...>
 // ******************************************* //
 // *** Push front & back to index sequence *** //
 // ******************************************* //
+// 1. idx_seq<> does exist
+// 2. we can push front/back to idx_seq<>
+//
 template<std::size_t N, typename T> 
 struct push_front_idx_seq  
 {    
@@ -156,7 +159,7 @@ struct push_front_idx_seq
 };  
    
 template<std::size_t N, std::size_t...Ns> 
-struct push_front_idx_seq<N, idx_seq<Ns...>> 
+struct push_front_idx_seq<N, idx_seq<Ns...>>  
 {
     using type = idx_seq<N,Ns...>;
 };
@@ -228,6 +231,55 @@ template<std::size_t N, std::size_t...Ns>
 struct reverse_idx_seq<idx_seq<N,Ns...>>
 {
     using type = typename push_back_idx_seq<N, typename reverse_idx_seq<idx_seq<Ns...>>::type>::type;
+};
+
+
+
+// ***************************** //
+// *** Dedupe index sequence *** //
+// ***************************** //
+template<typename T>
+struct dedupe_idx_seq
+{
+    // In general, T is not dedupable. 
+};
+
+template<>
+struct dedupe_idx_seq<idx_seq<>>
+{
+    using type = idx_seq<>;
+};
+
+template<std::size_t N>
+struct dedupe_idx_seq<idx_seq<N>>
+{
+    using type = idx_seq<N>;
+};
+  
+// template<std::size_t N, std::size_t...Ns>
+// struct dedupe_idx_seq<idx_seq<N,N,Ns...>>
+// {
+//     using type = typename push_front_idx_seq<N, typename dedupe_idx_seq<idx_seq<Ns...>>::type>::type;
+// }; 
+//
+// This implementation fails, it converts :
+// idx_seq<1,1,1,1,1>            -->  idx_seq<1,1,1>
+// idx_seq<1,1,1,1,1,2,3,3,3,4>  -->  idx_seq<1,1,1,2,3,3,4>
+//
+// When N == 1st item of Ns..., then it cannot dedupe that item, which is incorrect.
+
+template<std::size_t N, std::size_t...Ns>
+struct dedupe_idx_seq<idx_seq<N,N,Ns...>>
+{
+    using type = typename dedupe_idx_seq<
+                 typename push_front_idx_seq<N, typename dedupe_idx_seq<idx_seq<Ns...>>::type>::type
+                 >::type;
+}; 
+
+template<std::size_t N0, std::size_t N1, std::size_t...Ns>
+struct dedupe_idx_seq<idx_seq<N0,N1,Ns...>>
+{
+    using type = typename push_front_idx_seq<N0, typename dedupe_idx_seq<idx_seq<N1,Ns...>>::type>::type;
 };
 
 

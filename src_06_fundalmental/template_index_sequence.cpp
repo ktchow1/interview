@@ -36,5 +36,20 @@ void test_template_index_sequence()
 
     using T7 = reverse_idx_seq<idx_seq<80,70,60,50,40,30,20,10>>::type;
     static_assert(std::is_same_v<T7, idx_seq<10,20,30,40,50,60,70,80>>, "failed to reverse_idx_seq");
+
+    using T8 = dedupe_idx_seq<idx_seq<>>::type;
+    static_assert(std::is_same_v<T8, idx_seq<>>, "failed to dedupe_idx_seq");
+
+    using T9 = dedupe_idx_seq<idx_seq<1,1,1,1,1>>::type;
+    static_assert(std::is_same_v<T9, idx_seq<1>>, "failed to dedupe_idx_seq");
+
+    using T10 = dedupe_idx_seq<idx_seq<1,1,1,1,1,2,3,3,3,4>>::type;
+    static_assert(std::is_same_v<T10, idx_seq<1,2,3,4>>, "failed to dedupe_idx_seq");
+
+    using T11 = dedupe_idx_seq<idx_seq<1,2,3,4,5,6,7>>::type;
+    static_assert(std::is_same_v<T11, idx_seq<1,2,3,4,5,6,7>>, "failed to dedupe_idx_seq");
+
+    using T12 = dedupe_idx_seq<idx_seq<1,1,1,2,3,3,3,4,4,4,5,6,7,7,7>>::type;
+    static_assert(std::is_same_v<T12, idx_seq<1,2,3,4,5,6,7>>, "failed to dedupe_idx_seq");
 }
 
