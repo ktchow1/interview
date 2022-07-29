@@ -218,3 +218,18 @@ auto make_tuple_cat(const TUP0& tup0, const TUP1& tup1)
 // *** Tuple apply *** //
 // ******************* //
 // There is no struct traits for this part.
+
+template<typename TUP, std::size_t...Ns, typename F>
+void apply_helper(TUP& tup, idx_seq<Ns...> dummy, F& fct)
+{
+    fct(std::get<Ns>(tup)...);
+}
+
+template<typename TUP, typename F>
+void apply(TUP& tup, F& fct)
+{
+    apply_helper(tup, typename idx_seq_generator<std::tuple_size<TUP>::value>::type{}, fct);
+}
+
+
+

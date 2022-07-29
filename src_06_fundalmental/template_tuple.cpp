@@ -142,6 +142,23 @@ void test_cat()
     assert(std::get<2>(x1) == std::get<6>(x2));
 }
 
+void test_apply()
+{
+    using T = std::tuple<char, std::uint32_t, std::string, std::pair<double, double>>;
+    auto  t = T{'a', 12345, "wxyz", std::make_pair(3.1415, 1.4141)};
+    auto  f = [](char c, std::uint32_t n, const std::string& s, const std::pair<double,double>& p)
+    {
+        std::cout << "\n";
+        std::cout << "\nThis is tuple apply.";
+        std::cout << "\nchar          = " << c;
+        std::cout << "\nstd::uint32_t = " << n;
+        std::cout << "\nstd::string   = " << s;
+        std::cout << "\nstd::pair<>   = " << p.first << "/" << p.second;
+        std::cout << "\n";
+    };
+    apply(t,f);
+}
+
 void test_template_tuple()
 {
     test_size_and_element();
@@ -149,5 +166,6 @@ void test_template_tuple()
     test_append();
     test_reverse();
     test_cat();
+    test_apply();
 }
 
