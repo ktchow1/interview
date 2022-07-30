@@ -69,7 +69,7 @@ struct tuple_element2
 // ********************* //
 // *** Shuffle tuple *** //
 // ********************* //
-// Slight difference between method 1&2
+// Slight difference in interface between method 1&2, results are the same.
 // 1. shuffle_tuple         <TUP,1,3,5,7>
 // 2. shuffle_tuple2<idx_seq<TUP,1,3,5,7>>
   
@@ -105,6 +105,17 @@ auto make_shuffle_tuple(const TUP& x, idx_seq<Ns...> dummy)
 // *** Push front & back to tuple *** //
 // ********************************** //
 template<typename TUP, typename...Ts> 
+struct push_front_tuple
+{
+};
+
+template<typename...TUP_Ts, typename...Ts>
+struct push_front_tuple<std::tuple<TUP_Ts...>,Ts...>
+{
+    using type = std::tuple<Ts...,TUP_Ts...>;
+};
+
+template<typename TUP, typename...Ts> 
 struct push_back_tuple
 {
 };
@@ -116,11 +127,23 @@ struct push_back_tuple<std::tuple<TUP_Ts...>,Ts...>
 };
 
 // *** Factory *** //
-// The following technique is useful in append / reverse / cat :
+// The following technique is useful in push / reverse / cat :
 // - we have TUP   in the interface
 // - we need Ns... in the implementation
 // - introduce a helper to do conversion
 //
+template<typename TUP, std::size_t...Ns, typename...Ts>
+auto make_push_front_tuple_helper(const TUP& tup, idx_seq<Ns...> dummy, const Ts&...xs) 
+{
+    return std::make_tuple(xs..., std::get<Ns>(tup)...);
+}
+
+template<typename TUP, typename...Ts>
+auto make_push_front_tuple(const TUP& tup, const Ts&...xs) 
+{
+    return make_push_front_tuple_helper(tup, typename idx_seq_generator<std::tuple_size<TUP>::value>::type{}, xs...);
+}
+
 template<typename TUP, std::size_t...Ns, typename...Ts>
 auto make_push_back_tuple_helper(const TUP& tup, idx_seq<Ns...> dummy, const Ts&...xs) 
 {
@@ -135,6 +158,30 @@ auto make_push_back_tuple(const TUP& tup, const Ts&...xs)
 
 
 
+// ******************************************** //
+// *** Pop front & back from index sequence *** //
+// ******************************************** //
+// The following method is ambiguous. [FAILED]
+//
+template<typename T, std::uint32_t N> 
+struct pop_front_tuple_failed
+{
+};
+
+template<typename TUP>
+struct pop_front_tuple_failed<TUP,0>
+{
+    using type = TUP;
+};
+
+template<typename T, typename...TUP_Ts, std::uint32_t N>
+struct pop_front_tuple_failed<std::tuple<T,TUP_Ts...>,N>
+{
+    using type = typename pop_front_tuple_failed<std::tuple<TUP_Ts...>, N-1>::type;
+};
+
+
+
 // ********************* //
 // *** Reverse tuple *** //
 // ********************* //
@@ -145,7 +192,7 @@ struct reverse_tuple
     using type = typename shuffle_tuple2<TUP, typename inv_idx_seq_generator<std::tuple_size<TUP>::value>::type>::type;
 };
 
-// *** Method 2 (using append tuple) *** //
+// *** Method 2 (using push back tuple) *** //
 template<typename T>
 struct reverse_tuple2
 {
@@ -165,7 +212,7 @@ struct reverse_tuple2<std::tuple<T,Ts...>>
 };
 
 // *** Factory *** //
-template<typename TUP, std::size_t...Ns> // BUG : Don't use std::uint32_t instead of std::size_t, as std::tuple_size returns the latter
+template<typename TUP, std::size_t...Ns> 
 auto make_reverse_tuple_helper(const TUP& tup, idx_seq<Ns...> dummy)
 {
     return std::make_tuple(std::get<std::tuple_size<TUP>::value-1-Ns>(tup)...); // BUG : Don't forget minus one, otherwise it goes out of tuple range
@@ -182,7 +229,58 @@ auto make_reverse_tuple(const TUP& tup)
 // ********************* //
 // **** Filter tuple *** //
 // ********************* //
+template<typename T>
+struct filter_tuple
+{
+    // In general, T is not reversible. 
+};
 
+template<>
+struct filter_tuple<std::tuple<>> 
+{
+    using type = std::tuple<>; 
+};
+
+template<typename T>
+struct filter_tuple<std::tuple<T>> 
+{
+    using type = std::tuple<T>; 
+};
+
+template<typename T0, typename T1, typename...Ts> 
+struct filter_tuple<std::tuple<T0,T1,Ts...>>
+{
+    using type = typename push_front_tuple<typename filter_tuple<std::tuple<Ts...>>::type, T0>::type;
+}; 
+  
+// *** Factory *** //
+template<typename TUP> 
+auto make_filter_tuple_helper(const TUP& tup, idx_seq<> dummy)
+{
+    return std::tuple<>{}; 
+}
+
+template<typename TUP, std::size_t N> 
+auto make_filter_tuple_helper(const TUP& tup, idx_seq<N> dummy)
+{
+    return std::make_tuple(std::get<N>(tup)); 
+}
+
+template<typename TUP, std::size_t N0, std::size_t N1, std::size_t...Ns> 
+auto make_filter_tuple_helper(const TUP& tup, idx_seq<N0,N1,Ns...> dummy)
+{
+    return make_push_front_tuple
+    (
+        make_filter_tuple_helper(tup, idx_seq<Ns...>{}),  std::get<N0>(tup)
+    );
+}
+
+template<typename TUP>
+auto make_filter_tuple(const TUP& tup)
+{
+    return make_filter_tuple_helper(tup, typename idx_seq_generator<std::tuple_size<TUP>::value>::type{}); 
+}
+  
 
 
 // ***************** //

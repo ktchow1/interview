@@ -68,25 +68,75 @@ void test_shuffle()
     assert(std::get<2>(t) == std::get<1>(x2));
 }
 
-void test_push()
+void test_push_front()
+{
+    using T    = std::tuple<char, std::uint32_t, std::string, std::pair<double,double>, double>;
+    using X0   = push_front_tuple<T,  std::string, char>::type;
+    using X1   = push_front_tuple<X0, std::string, char>::type;
+    using X2   = push_front_tuple<std::tuple<>, std::string, char>::type;
+    using ANS0 = std::tuple<std::string, char, char, std::uint32_t, std::string, std::pair<double,double>, double>;
+    using ANS1 = std::tuple<std::string, char, std::string, char, char, std::uint32_t, std::string, std::pair<double,double>, double>;
+    using ANS2 = std::tuple<std::string, char>;
+
+    static_assert(std::is_same_v<X0, ANS0>, "failed to push_front_tuple");
+    static_assert(std::is_same_v<X1, ANS1>, "failed to push_front_tuple");
+    static_assert(std::is_same_v<X2, ANS2>, "failed to push_front_tuple");
+
+    // *** Factory *** //
+    auto  t    = T{'a', 12345, "wxyz", std::make_pair(3.1415, 1.4141), 0.98765};
+    auto  x3   = make_push_front_tuple(t, std::string{"hello-world"});
+    auto  x4   = make_push_front_tuple(t, std::string{"hello-world"}, 'A', 'B', 'C');
+    auto  x5   = make_push_front_tuple(std::tuple<>{}, std::string{"hello-world"}, 'A');
+    using ANS3 = std::tuple<std::string, char, std::uint32_t, std::string, std::pair<double,double>, double>;
+    using ANS4 = std::tuple<std::string, char, char, char, char, std::uint32_t, std::string, std::pair<double,double>, double>;
+    using ANS5 = std::tuple<std::string, char>;
+
+    static_assert(std::is_same_v<decltype(x3), ANS3>, "failed to make_push_front_tuple");
+    static_assert(std::is_same_v<decltype(x4), ANS4>, "failed to make_push_front_tuple");
+    static_assert(std::is_same_v<decltype(x5), ANS5>, "failed to make_push_front_tuple");
+}
+
+void test_push_back()
 {
     using T    = std::tuple<char, std::uint32_t, std::string, std::pair<double,double>, double>;
     using X0   = push_back_tuple<T,  std::string, char>::type;
     using X1   = push_back_tuple<X0, std::string, char>::type;
+    using X2   = push_back_tuple<std::tuple<>, std::string, char>::type;
     using ANS0 = std::tuple<char, std::uint32_t, std::string, std::pair<double,double>, double, std::string, char>;
     using ANS1 = std::tuple<char, std::uint32_t, std::string, std::pair<double,double>, double, std::string, char, std::string, char>;
+    using ANS2 = std::tuple<std::string, char>;
 
     static_assert(std::is_same_v<X0, ANS0>, "failed to push_back_tuple");
     static_assert(std::is_same_v<X1, ANS1>, "failed to push_back_tuple");
+    static_assert(std::is_same_v<X2, ANS2>, "failed to push_back_tuple");
 
     // *** Factory *** //
     auto  t    = T{'a', 12345, "wxyz", std::make_pair(3.1415, 1.4141), 0.98765};
-    auto  x2   = make_push_back_tuple(t, std::string{"hello-world"});
-    auto  x3   = make_push_back_tuple(t, std::string{"hello-world"}, 'A', 'B', 'C');
-    using ANS2 = std::tuple<char, std::uint32_t, std::string, std::pair<double,double>, double, std::string>;
-    using ANS3 = std::tuple<char, std::uint32_t, std::string, std::pair<double,double>, double, std::string, char, char, char>;
-    static_assert(std::is_same_v<decltype(x2), ANS2>, "failed to make_push_back_tuple");
+    auto  x3   = make_push_back_tuple(t, std::string{"hello-world"});
+    auto  x4   = make_push_back_tuple(t, std::string{"hello-world"}, 'A', 'B', 'C');
+    auto  x5   = make_push_back_tuple(std::tuple<>{}, std::string{"hello-world"}, 'A');
+    using ANS3 = std::tuple<char, std::uint32_t, std::string, std::pair<double,double>, double, std::string>;
+    using ANS4 = std::tuple<char, std::uint32_t, std::string, std::pair<double,double>, double, std::string, char, char, char>;
+    using ANS5 = std::tuple<std::string, char>;
+
     static_assert(std::is_same_v<decltype(x3), ANS3>, "failed to make_push_back_tuple");
+    static_assert(std::is_same_v<decltype(x4), ANS4>, "failed to make_push_back_tuple");
+    static_assert(std::is_same_v<decltype(x5), ANS5>, "failed to make_push_back_tuple");
+}
+
+void test_pop_front()
+{
+    // using T    = std::tuple<char, std::uint32_t, std::string, std::pair<double,double>, double>;
+    // using X0   = pop_front_tuple<T, 1>::type;
+    // using X1   = pop_front_tuple<T, 2>::type;
+    // using X2   = pop_front_tuple<T, 3>::type;
+    // using ANS0 = std::tuple<char, std::uint32_t, std::string, std::pair<double,double>, double>;
+    // using ANS1 = std::tuple<std::uint32_t, std::string, std::pair<double,double>, double>;
+    // using ANS2 = std::tuple<std::string, std::pair<double,double>, double>;
+    //
+    // static_assert(std::is_same_v<X0, ANS0>, "failed to pop_front_tuple");
+    // static_assert(std::is_same_v<X1, ANS1>, "failed to pop_front_tuple");
+    // static_assert(std::is_same_v<X2, ANS2>, "failed to pop_front_tuple");
 }
 
 void test_reverse()
@@ -119,6 +169,45 @@ void test_reverse()
     assert(std::get<0>(t) == std::get<5>(x5));
     assert(std::get<1>(t) == std::get<4>(x5));
     assert(std::get<2>(t) == std::get<3>(x5));
+}
+
+void test_filter()
+{    
+    using T   = std::tuple<char, char,
+                           std::uint32_t, std::uint32_t,
+                           std::string, std::string, 
+                           std::pair<double,double>, std::pair<double,double>,
+                           std::vector<double>, std::vector<double>,
+                           double, double>;
+    using X0   = filter_tuple<T >::type;
+    using X1   = filter_tuple<X0>::type;
+    using ANS0 = std::tuple<char, std::uint32_t, std::string, std::pair<double,double>, std::vector<double>, double>;
+    using ANS1 = std::tuple<char, std::string, std::vector<double>>;
+
+    static_assert(std::is_same_v<X0, ANS0>, "failed to filter_tuple");
+    static_assert(std::is_same_v<X1, ANS1>, "failed to filter_tuple");
+
+    // *** Factory *** //
+    auto  t  = T{'a', 'a', 12345, 23456, 
+                 "abcdf", "wxyz", 
+                 std::make_pair(3.1415, 1.4141), 
+                 std::make_pair(3.1415, 1.4141), 
+                 std::vector<double>{0.1,0.2,0.3,0.4},
+                 std::vector<double>{0.1,0.2,0.3,0.4},
+                 0.98765, 0.98765};
+    auto  x2   = make_filter_tuple(t); 
+    auto  x3   = make_filter_tuple(x2); 
+    using ANS2 = ANS0;
+    using ANS3 = ANS1;
+
+    static_assert(std::is_same_v<decltype(x2), ANS2>, "failed to make_reverse_tuple");
+    assert(std::get<0>(t) == std::get<0>(x2));
+    assert(std::get<2>(t) == std::get<1>(x2));
+    assert(std::get<4>(t) == std::get<2>(x2));
+      
+    static_assert(std::is_same_v<decltype(x3), ANS3>, "failed to make_reverse_tuple");
+    assert(std::get<0>(t) == std::get<0>(x3));
+    assert(std::get<4>(t) == std::get<1>(x3));
 }
 
 void test_cat()
@@ -231,8 +320,10 @@ void test_template_tuple()
 {
     test_size_and_element();
     test_shuffle();
-    test_push();
+    test_push_front();
+    test_push_back();
     test_reverse();
+    test_filter();
     test_cat();
     test_apply();
     test_my_tuple();
