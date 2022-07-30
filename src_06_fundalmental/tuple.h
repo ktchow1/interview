@@ -101,16 +101,16 @@ auto make_shuffle_tuple(const TUP& x, idx_seq<Ns...> dummy)
 
 
 
-// ******************** //
-// *** Append tuple *** //
-// ******************** //
+// ********************************** //
+// *** Push front & back to tuple *** //
+// ********************************** //
 template<typename TUP, typename...Ts> 
-struct append_tuple
+struct push_back_tuple
 {
 };
 
 template<typename...TUP_Ts, typename...Ts>
-struct append_tuple<std::tuple<TUP_Ts...>,Ts...>
+struct push_back_tuple<std::tuple<TUP_Ts...>,Ts...>
 {
     using type = std::tuple<TUP_Ts...,Ts...>;
 };
@@ -122,15 +122,15 @@ struct append_tuple<std::tuple<TUP_Ts...>,Ts...>
 // - introduce a helper to do conversion
 //
 template<typename TUP, std::size_t...Ns, typename...Ts>
-auto make_append_tuple_helper(const TUP& tup, idx_seq<Ns...> dummy, const Ts&...xs) 
+auto make_push_back_tuple_helper(const TUP& tup, idx_seq<Ns...> dummy, const Ts&...xs) 
 {
     return std::make_tuple(std::get<Ns>(tup)..., xs...);
 }
 
 template<typename TUP, typename...Ts>
-auto make_append_tuple(const TUP& tup, const Ts&...xs) 
+auto make_push_back_tuple(const TUP& tup, const Ts&...xs) 
 {
-    return make_append_tuple_helper(tup, typename idx_seq_generator<std::tuple_size<TUP>::value>::type{}, xs...);
+    return make_push_back_tuple_helper(tup, typename idx_seq_generator<std::tuple_size<TUP>::value>::type{}, xs...);
 }
 
 
@@ -161,7 +161,7 @@ struct reverse_tuple2<std::tuple<T>>
 template<typename T, typename...Ts> 
 struct reverse_tuple2<std::tuple<T,Ts...>>
 {
-    using type = typename append_tuple<typename reverse_tuple2<std::tuple<Ts...>>::type, T>::type;
+    using type = typename push_back_tuple<typename reverse_tuple2<std::tuple<Ts...>>::type, T>::type;
 };
 
 // *** Factory *** //
@@ -179,6 +179,12 @@ auto make_reverse_tuple(const TUP& tup)
 
 
 
+// ********************* //
+// **** Filter tuple *** //
+// ********************* //
+
+
+
 // ***************** //
 // *** Tuple cat *** //
 // ***************** //
@@ -190,20 +196,20 @@ struct tuple_cat
 template<typename TUP0, typename T>
 struct tuple_cat<TUP0, std::tuple<T>>
 {
-    using type = typename append_tuple<TUP0,T>::type;
+    using type = typename push_back_tuple<TUP0,T>::type;
 };
 
 template<typename TUP0, typename T, typename...Ts>
 struct tuple_cat<TUP0, std::tuple<T,Ts...>>
 {
-    using type = tuple_cat<typename append_tuple<TUP0,T>::type, std::tuple<Ts...>>::type;
+    using type = tuple_cat<typename push_back_tuple<TUP0,T>::type, std::tuple<Ts...>>::type;
 }; 
 
 // *** Factory *** //
 template<typename TUP0, typename TUP1, std::size_t...Ns> 
 auto make_tuple_cat_helper(const TUP0& tup0, const TUP1& tup1, idx_seq<Ns...> dummy)
 {
-    return make_append_tuple(tup0, std::get<Ns>(tup1)...);
+    return make_push_back_tuple(tup0, std::get<Ns>(tup1)...);
 }
 
 template<typename TUP0, typename TUP1>  

@@ -68,25 +68,25 @@ void test_shuffle()
     assert(std::get<2>(t) == std::get<1>(x2));
 }
 
-void test_append()
+void test_push()
 {
     using T    = std::tuple<char, std::uint32_t, std::string, std::pair<double,double>, double>;
-    using X0   = append_tuple<T,  std::string, char>::type;
-    using X1   = append_tuple<X0, std::string, char>::type;
+    using X0   = push_back_tuple<T,  std::string, char>::type;
+    using X1   = push_back_tuple<X0, std::string, char>::type;
     using ANS0 = std::tuple<char, std::uint32_t, std::string, std::pair<double,double>, double, std::string, char>;
     using ANS1 = std::tuple<char, std::uint32_t, std::string, std::pair<double,double>, double, std::string, char, std::string, char>;
 
-    static_assert(std::is_same_v<X0, ANS0>, "failed to append_tuple");
-    static_assert(std::is_same_v<X1, ANS1>, "failed to append_tuple");
+    static_assert(std::is_same_v<X0, ANS0>, "failed to push_back_tuple");
+    static_assert(std::is_same_v<X1, ANS1>, "failed to push_back_tuple");
 
     // *** Factory *** //
     auto  t    = T{'a', 12345, "wxyz", std::make_pair(3.1415, 1.4141), 0.98765};
-    auto  x2   = make_append_tuple(t, std::string{"hello-world"});
-    auto  x3   = make_append_tuple(t, std::string{"hello-world"}, 'A', 'B', 'C');
+    auto  x2   = make_push_back_tuple(t, std::string{"hello-world"});
+    auto  x3   = make_push_back_tuple(t, std::string{"hello-world"}, 'A', 'B', 'C');
     using ANS2 = std::tuple<char, std::uint32_t, std::string, std::pair<double,double>, double, std::string>;
     using ANS3 = std::tuple<char, std::uint32_t, std::string, std::pair<double,double>, double, std::string, char, char, char>;
-    static_assert(std::is_same_v<decltype(x2), ANS2>, "failed to make_append_tuple");
-    static_assert(std::is_same_v<decltype(x3), ANS3>, "failed to make_append_tuple");
+    static_assert(std::is_same_v<decltype(x2), ANS2>, "failed to make_push_back_tuple");
+    static_assert(std::is_same_v<decltype(x3), ANS3>, "failed to make_push_back_tuple");
 }
 
 void test_reverse()
@@ -231,7 +231,7 @@ void test_template_tuple()
 {
     test_size_and_element();
     test_shuffle();
-    test_append();
+    test_push();
     test_reverse();
     test_cat();
     test_apply();

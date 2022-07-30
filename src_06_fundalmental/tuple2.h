@@ -43,6 +43,13 @@ struct my_tuple_size<my_tuple<Ts...>>
 
 
 
+// ****************** //
+// *** Tuple size *** //
+// ****************** //
+// see implementation in tuple.h
+
+
+
 // *********** //
 // *** Get *** //
 // *********** //

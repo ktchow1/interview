@@ -178,6 +178,32 @@ struct push_back_idx_seq<N, idx_seq<Ns...>>              // <===
 
 
 
+// ****************************** //
+// *** Reverse index sequence *** //
+// ****************************** //
+// Depends on push_back.
+// Reversing index sequence is different from constructing an inverted index sequence.
+//
+template<typename T> 
+struct reverse_idx_seq
+{
+    // In general, T is not reversible. 
+};
+
+template<>
+struct reverse_idx_seq<idx_seq<>>
+{
+    using type = idx_seq<>; 
+};
+
+template<std::size_t N, std::size_t...Ns>
+struct reverse_idx_seq<idx_seq<N,Ns...>>
+{
+    using type = typename push_back_idx_seq<N, typename reverse_idx_seq<idx_seq<Ns...>>::type>::type;
+};
+
+
+
 // ***************************** //
 // *** Filter index sequence *** //
 // ***************************** //
@@ -205,32 +231,6 @@ template<std::size_t N0, std::size_t N1, std::size_t...Ns>
 struct filter_idx_seq<idx_seq<N0,N1,Ns...>> // <--- This is implementation for recursion.
 {
     using type = typename push_front_idx_seq<N0, typename filter_idx_seq<idx_seq<Ns...>>::type>::type;
-};
-
-
-
-// ****************************** //
-// *** Reverse index sequence *** //
-// ****************************** //
-// Depends on push_back.
-// Reversing index sequence is different from constructing an inverted index sequence.
-//
-template<typename T> 
-struct reverse_idx_seq
-{
-    // In general, T is not reversible. 
-};
-
-template<>
-struct reverse_idx_seq<idx_seq<>>
-{
-    using type = idx_seq<>; 
-};
-
-template<std::size_t N, std::size_t...Ns>
-struct reverse_idx_seq<idx_seq<N,Ns...>>
-{
-    using type = typename push_back_idx_seq<N, typename reverse_idx_seq<idx_seq<Ns...>>::type>::type;
 };
 
 

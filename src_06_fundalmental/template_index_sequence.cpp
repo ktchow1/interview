@@ -25,17 +25,17 @@ void test_template_index_sequence()
     using T3 = push_back_idx_seq<99, idx_seq<>>::type;
     static_assert(std::is_same_v<T3, idx_seq<99>>, "failed to push_back_idx_seq");
 
-    using T4 = filter_idx_seq<idx_seq<10,20,30,40,50,60,70,80,90>>::type;
-    static_assert(std::is_same_v<T4, idx_seq<10,30,50,70,90>>, "failed to filter_idx_seq");
+    using T4 = reverse_idx_seq<idx_seq<1,2,3,4,5,6>>::type;
+    static_assert(std::is_same_v<T4, idx_seq<6,5,4,3,2,1>>, "failed to reverse_idx_seq");
 
-    using T5 = filter_idx_seq<idx_seq<10>>::type;
-    static_assert(std::is_same_v<T5, idx_seq<10>>, "failed to filter_idx_seq");
+    using T5 = reverse_idx_seq<idx_seq<80,70,60,50,40,30,20,10>>::type;
+    static_assert(std::is_same_v<T5, idx_seq<10,20,30,40,50,60,70,80>>, "failed to reverse_idx_seq");
 
-    using T6 = reverse_idx_seq<idx_seq<1,2,3,4,5,6>>::type;
-    static_assert(std::is_same_v<T6, idx_seq<6,5,4,3,2,1>>, "failed to reverse_idx_seq");
+    using T6 = filter_idx_seq<idx_seq<10,20,30,40,50,60,70,80,90>>::type;
+    static_assert(std::is_same_v<T6, idx_seq<10,30,50,70,90>>, "failed to filter_idx_seq");
 
-    using T7 = reverse_idx_seq<idx_seq<80,70,60,50,40,30,20,10>>::type;
-    static_assert(std::is_same_v<T7, idx_seq<10,20,30,40,50,60,70,80>>, "failed to reverse_idx_seq");
+    using T7 = filter_idx_seq<idx_seq<10>>::type;
+    static_assert(std::is_same_v<T7, idx_seq<10>>, "failed to filter_idx_seq");
 
     using T8 = dedupe_idx_seq<idx_seq<>>::type;
     static_assert(std::is_same_v<T8, idx_seq<>>, "failed to dedupe_idx_seq");
