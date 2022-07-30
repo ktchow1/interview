@@ -85,22 +85,22 @@ struct inv_idx_seq_generator<N,N,Ns...>
 }; 
 
 // [Approach 2] fails
-// inv_idx_seq_generator<4>::type = inv_idx_seq_generator<4,0> ::type
-//                                = inv_idx_seq_generator<4,1,0> ::type
-//                                = inv_idx_seq_generator<4,2,1,0> ::type
-//                                = inv_idx_seq_generator<4,3,2,1,0> ::type
-//                                = rev_idx_seq<3,2,1,0>  
+// inv_idx_seq_generator_failed<4>::type = inv_idx_seq_generator_failed<4,0> ::type
+//                                       = inv_idx_seq_generator_failed<4,1,0> ::type
+//                                       = inv_idx_seq_generator_failed<4,2,1,0> ::type
+//                                       = inv_idx_seq_generator_failed<4,3,2,1,0> ::type
+//                                       = rev_idx_seq<3,2,1,0>  
 /*
 template<std::size_t N, std::size_t ...Ns> 
-struct inv_idx_seq_generator
+struct inv_idx_seq_generator_failed
 {
-    using type = typename inv_idx_seq_generator<N, sizeof...(Ns), Ns...>::type;
+    using type = typename inv_idx_seq_generator_failed<N, sizeof...(Ns), Ns...>::type;
 };
 
 template<std::size_t N, std::size_t ...Ns>
-struct inv_idx_seq_generator<N,N-1,Ns...> // <--- in here : do not put formula, do not put oher para after para-pack
+struct inv_idx_seq_generator_failed<N,N-1,Ns...> // <--- in here : do not put formula, do not put oher para after para-pack
 {
-    using type = idx_seq<Ns...>;          // <--- in here : we can put formula, we can put oher para after para-pack
+    using type = idx_seq<Ns...>;                 // <--- in here : we can put formula, we can put oher para after para-pack
 };  
 */
 
