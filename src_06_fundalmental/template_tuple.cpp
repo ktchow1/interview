@@ -1,6 +1,7 @@
 #include<iostream>
 #include<vector>
 #include"tuple.h"
+#include"tuple2.h"
 #include<assert.h> // for assert
 
 
@@ -159,6 +160,73 @@ void test_apply()
     apply(t,f);
 }
 
+void test_my_tuple()
+{
+    my_tuple<std::uint32_t,std::uint32_t,std::uint32_t> tup0
+    {
+        1, 2, 3
+    };
+
+    my_tuple<std::uint32_t,std::string,std::string,double> tup1
+    {
+        1, "ABC", "DEF", 3.14
+    };
+
+    my_tuple<std::uint32_t,std::vector<int>,std::vector<double>,double,std::string> tup2
+    {
+        1, std::vector{11,12,13}, std::vector<double>{0.123,0.234}, 2.718238, "hello"
+    };
+
+    static_assert(my_tuple_size<decltype(tup0)>::value == 3, "failed to my_tuple_size");
+    static_assert(my_tuple_size<decltype(tup1)>::value == 4, "failed to my_tuple_size");
+    static_assert(my_tuple_size<decltype(tup2)>::value == 5, "failed to my_tuple_size");
+
+    std::cout << "\ntuple0 get = " << get<0>(tup0);
+    std::cout << "\ntuple0 get = " << get<1>(tup0);
+    std::cout << "\ntuple0 get = " << get<2>(tup0);
+    std::cout << "\ntuple1 get = " << get<0>(tup1);
+    std::cout << "\ntuple1 get = " << get<1>(tup1);
+    std::cout << "\ntuple1 get = " << get<2>(tup1);
+    std::cout << "\ntuple1 get = " << get<3>(tup1);
+    std::cout << "\ntuple2 get = " << get<0>(tup2);
+    std::cout << "\ntuple2 get = " << get<1>(tup2)[0];
+    std::cout << "\ntuple2 get = " << get<2>(tup2)[0];
+    std::cout << "\ntuple2 get = " << get<3>(tup2);
+    std::cout << "\ntuple2 get = " << get<4>(tup2);
+
+    auto tup3 = make_my_tuple
+    (
+        std::uint32_t{1}, std::uint32_t{2}, std::uint32_t{3}
+    );
+
+    auto tup4 = make_my_tuple
+    (
+        std::uint32_t{1}, std::string{"ABC"}, std::string{"DEF"}, double{3.14}
+    );
+
+    auto tup5 = make_my_tuple
+    (
+        std::uint32_t{1}, std::vector{11,12,13}, std::vector<double>{0.123,0.234}, double{2.718238}, std::string{"hello"}
+    );
+
+    static_assert(my_tuple_size<decltype(tup3)>::value == 3, "failed to my_tuple_size");
+    static_assert(my_tuple_size<decltype(tup4)>::value == 4, "failed to my_tuple_size");
+    static_assert(my_tuple_size<decltype(tup5)>::value == 5, "failed to my_tuple_size");
+
+    std::cout << "\ntuple3 get = " << get<0>(tup3);
+    std::cout << "\ntuple3 get = " << get<1>(tup3);
+    std::cout << "\ntuple3 get = " << get<2>(tup3);
+    std::cout << "\ntuple4 get = " << get<0>(tup4);
+    std::cout << "\ntuple4 get = " << get<1>(tup4);
+    std::cout << "\ntuple4 get = " << get<2>(tup4);
+    std::cout << "\ntuple4 get = " << get<3>(tup4);
+    std::cout << "\ntuple5 get = " << get<0>(tup5);
+    std::cout << "\ntuple5 get = " << get<1>(tup5)[0];
+    std::cout << "\ntuple5 get = " << get<2>(tup5)[0];
+    std::cout << "\ntuple5 get = " << get<3>(tup5);
+    std::cout << "\ntuple5 get = " << get<4>(tup5);
+}
+
 void test_template_tuple()
 {
     test_size_and_element();
@@ -167,5 +235,6 @@ void test_template_tuple()
     test_reverse();
     test_cat();
     test_apply();
+    test_my_tuple();
 }
 
