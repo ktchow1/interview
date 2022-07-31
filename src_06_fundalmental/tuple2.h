@@ -7,19 +7,16 @@
 // Keep tuple as POD, no explicit constructor is needed, aggregate initialization works.
 //
 template<typename T, typename...Ts>
-struct my_tuple;
+struct my_tuple
+{
+    T x;
+    my_tuple<Ts...> tup;
+};
 
 template<typename T>
 struct my_tuple<T>
 {
     T x;
-};
-
-template<typename T, typename...Ts>
-struct my_tuple
-{
-    T x;
-    my_tuple<Ts...> tup;
 };
 
 

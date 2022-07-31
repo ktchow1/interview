@@ -68,3 +68,24 @@ void test_template_index_sequence()
     static_assert(std::is_same_v<T16, idx_seq<1,2,3,4,5,6,7>>, "failed to dedupe_idx_seq");
 }
 
+
+void test_template_index_sequence_Maven()
+{
+    using T0 = idx_seq<1,2,3,4,5>;
+    using T1 = idx_seq<4,5,6,7,8>;
+    using T2 = dot_product<T0,T1>::type;
+    using ANS = idx_seq<1*4,2*5,3*6,4*7,5*8>;
+
+    static_assert(std::is_same_v<T2,ANS>, "failed to dot_product");
+    using T3 = zip_product<idx_seq<1,2,3,4,5>>::type;
+
+    static_assert(std::is_same_v<T3, idx_seq<1,2,3,4,5>>, "failed to zip product");
+    using T4 = zip_product<idx_seq<1,2,3,4,5>, 
+                           idx_seq<2,3,4,5,6>>::type;
+    static_assert(std::is_same_v<T4, idx_seq<1*2,2*3,3*4,4*5,5*6>>, "failed to zip product");
+
+    using T5 = zip_product<idx_seq<1,2,3,4,5>, 
+                           idx_seq<2,3,4,5,6>, 
+                           idx_seq<3,4,5,6,7>>::type;
+    static_assert(std::is_same_v<T5, idx_seq<1*2*3,2*3*4,3*4*5,4*5*6,5*6*7>>, "failed to zip product");
+}

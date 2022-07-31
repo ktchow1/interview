@@ -215,6 +215,8 @@ struct pop_front_idx_seq_failed<idx_seq<TUP_N,TUP_Ns...>,N>
     using type = typename pop_front_idx_seq_failed<idx_seq<TUP_Ns...>,N-1>::type;
 };
 
+// Todo : please try to mimic get<N>(tuple) implementation
+
 
 
 // ****************************** //
@@ -317,6 +319,39 @@ struct dedupe_idx_seq<idx_seq<N0,N1,Ns...>>
 
 
 
+// *************************** //
+// *** Dot product and zip *** //
+// *************************** //
+template<typename T0, typename T1>
+struct dot_product
+{
+};
+
+template<std::size_t...Ns0, std::size_t...Ns1>
+struct dot_product<idx_seq<Ns0...>, idx_seq<Ns1...>>
+{
+    using type = idx_seq<Ns0*Ns1...>;
+};
+
+template<typename...Is>
+struct zip_product
+{
+};
+
+template<typename IS>
+struct zip_product<IS>
+{
+    using type = IS;
+};
+
+template<typename IS0, typename IS1, typename...ISs>
+struct zip_product<IS0,IS1,ISs...>
+{
+    using type = typename zip_product<typename dot_product<IS0,IS1>::type, ISs...>::type;
+};
+
+
+
 // ********************************************************************************* //
 // For index sequence, we can get reversed type :
 //
@@ -334,3 +369,4 @@ struct dedupe_idx_seq<idx_seq<N0,N1,Ns...>>
 // 1. there is an input object (see tuple.h), we can operate with
 // 2. there is a factory std::make_tuple<>() which can resolve T... 
 // ********************************************************************************* //
+
