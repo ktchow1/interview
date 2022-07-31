@@ -12,8 +12,23 @@
 // 4. Use std::size_t instead of std::uint32_t, as the latter is not compatiable with std::tuple_size
 // 5. To get the type  of selected items in tuple, use variadic Ts... ans std::tuple<Ts...>
 //    To get the value of selected items in tuple, use variatic Ns... and std::make_tuple
+/*
+[Summary]
 
-
+    idx_seq            |                        |   my_tuple
+    idx_seq_generator  |  tuple_size            |   my_tuple_size
+inv_idx_seq_generator  |  tuple_element         |   my_tuple_element
+off_idx_seq_generator  |                        |   get
+                       |                        |   make_my_tuple
+-----------------------+------------------------+--------------------
+                       |  shuffle               |   
+push_front/push_back   |  push_front/push_back  |
+pop_front(failed)      |  pop_front(failed)     |
+reverse                |  reverse               |
+filter                 |  filter                |
+dedupe                 |  tuple_cat             |
+                       |  tuple_apply           |
+*/
 template<std::size_t ...Ns> struct idx_seq 
 {
 };
@@ -153,7 +168,7 @@ template<typename T, std::size_t...Ns>
 struct push_front_idx_seq  
 {    
 };  
-   // BUG : Don't forget "typename" and "::type" 
+  
 template<std::size_t...TUP_Ns, std::size_t...Ns> 
 struct push_front_idx_seq<idx_seq<TUP_Ns...>,Ns...>  
 {
