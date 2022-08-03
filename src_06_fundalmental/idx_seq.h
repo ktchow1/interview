@@ -27,7 +27,8 @@ pop_front(failed)      |  pop_front(failed)     |
 reverse                |  reverse               |
 filter                 |  filter                |
 dedupe                 |  tuple_cat             |
-                       |  tuple_apply           |
+dot_product            |  tuple_apply           |
+
 */
 template<std::size_t ...Ns> struct idx_seq 
 {
@@ -349,6 +350,29 @@ struct zip_product<IS0,IS1,ISs...>
 {
     using type = typename zip_product<typename dot_product<IS0,IS1>::type, ISs...>::type;
 };
+
+
+
+// ********************** //
+// *** Reverse binary *** //
+// ********************** //
+template<bool...Bs>
+struct reverse_boolean
+{
+};
+
+template<bool B>
+struct reverse_boolean<B>
+{
+    static const std::uint32_t value = B;
+};
+
+template<bool B, bool...Bs>
+struct reverse_boolean<B, Bs...>
+{
+    static const std::uint32_t value = B + 2 * reverse_boolean<Bs...>::value;
+};
+
 
 
 
