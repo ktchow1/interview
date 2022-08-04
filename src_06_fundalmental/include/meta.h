@@ -96,7 +96,7 @@ struct max_profit_modified
     static const std::int32_t value = max_item
     <
         N0-N1, 
-        N0-N1+max_profit_modified<N1,Ns...>::value
+        N0-N1 + max_profit_modified<N1,Ns...>::value
     >
     ::value;
 };
@@ -122,6 +122,45 @@ template<std::int32_t N0, std::int32_t N1>
 struct max_profit<N0,N1>
 {
     static const std::int32_t value = max_profit_modified<N0,N1>::value;
+};
+
+
+
+// ********************** //
+// *** Max subseq sum *** //
+// ********************** //
+template<std::int32_t N, std::int32_t...Ns>
+struct max_subseq_sum_modified
+{
+    static const std::int32_t value = max_item
+    <
+        N, 
+        N + max_subseq_sum_modified<Ns...>::value
+    >
+    ::value;
+};
+
+template<std::int32_t N>
+struct max_subseq_sum_modified<N>
+{
+    static const std::int32_t value = N;
+};
+
+template<std::int32_t N, std::int32_t...Ns>
+struct max_subseq_sum
+{
+    static const std::int32_t value = max_item
+    <
+        max_subseq_sum<Ns...>::value, 
+        max_subseq_sum_modified<N,Ns...>::value
+    >
+    ::value;
+};
+
+template<std::int32_t N>
+struct max_subseq_sum<N>
+{
+    static const std::int32_t value = max_subseq_sum_modified<N>::value;
 };
 
 

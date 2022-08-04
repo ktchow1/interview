@@ -38,6 +38,9 @@ void test_template_meta()
     static_assert(max_profit<10,12,18,8,2,5>::value == 16);
     static_assert(max_profit<10,12,18,8,2,5,8>::value == 16);
 
+    static_assert(max_subseq_sum<-10,-10,4,-10,-10,8,-10,-10>::value == 8);
+    static_assert(max_subseq_sum<-10,-10,4,4,1,-10,8,-10,-10>::value == 9);
+
     static_assert(reverse_boolean<false>::value              == 0, "failed to reverse boolean");
     static_assert(reverse_boolean< true>::value              == 1, "failed to reverse boolean");
     static_assert(reverse_boolean<false, false, true>::value == 4, "failed to reverse boolean");
