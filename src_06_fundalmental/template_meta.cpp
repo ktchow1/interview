@@ -24,6 +24,20 @@ void test_template_meta()
     static_assert(max_item<3,4,5,6>::value == 6);
     static_assert(max_item<4,5,6,7,8>::value == 8);
 
+    static_assert(max_profit_modified<12,8>::value == 4);
+    static_assert(max_profit_modified<12,8,2>::value == 10);
+    static_assert(max_profit_modified<12,8,2,5>::value == 10);
+    static_assert(max_profit_modified<12,18,8,2,5>::value == 10);
+    static_assert(max_profit_modified<10,12,18,8,2,5>::value == 8);
+    static_assert(max_profit_modified<10,12,18,8,2,5,8>::value == 8);
+
+    static_assert(max_profit<12,8>::value == 4);
+    static_assert(max_profit<12,8,2>::value == 10);
+    static_assert(max_profit<12,8,2,5>::value == 10);
+    static_assert(max_profit<12,18,8,2,5>::value == 16);
+    static_assert(max_profit<10,12,18,8,2,5>::value == 16);
+    static_assert(max_profit<10,12,18,8,2,5,8>::value == 16);
+
     static_assert(reverse_boolean<false>::value              == 0, "failed to reverse boolean");
     static_assert(reverse_boolean< true>::value              == 1, "failed to reverse boolean");
     static_assert(reverse_boolean<false, false, true>::value == 4, "failed to reverse boolean");
