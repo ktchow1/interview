@@ -24,6 +24,7 @@ endif()
 ###################
 include_directories(
     include 
+    src_06_fundalmental/include 
     /mnt/d/dev/boost_1_72_0 
 )
 

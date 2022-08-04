@@ -353,29 +353,6 @@ struct zip_product<IS0,IS1,ISs...>
 
 
 
-// ********************** //
-// *** Reverse binary *** //
-// ********************** //
-template<bool...Bs>
-struct reverse_boolean
-{
-};
-
-template<bool B>
-struct reverse_boolean<B>
-{
-    static const std::uint32_t value = B;
-};
-
-template<bool B, bool...Bs>
-struct reverse_boolean<B, Bs...>
-{
-    static const std::uint32_t value = B + 2 * reverse_boolean<Bs...>::value;
-};
-
-
-
-
 // ********************************************************************************* //
 // For index sequence, we can get reversed type :
 //

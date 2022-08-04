@@ -1,7 +1,7 @@
 #include<iostream>
 #include<vector>
-#include"tuple.h"
-#include"tuple2.h"
+#include<tuple.h>
+#include<tuple2.h>
 #include<assert.h> // for assert
 
 

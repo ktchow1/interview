@@ -1,5 +1,5 @@
 #include<iostream>
-#include"idx_seq.h"
+#include<idx_seq.h>
 
 
 // ************ //
@@ -88,13 +88,4 @@ void test_template_index_sequence_Maven()
                            idx_seq<2,3,4,5,6>, 
                            idx_seq<3,4,5,6,7>>::type;
     static_assert(std::is_same_v<T5, idx_seq<1*2*3,2*3*4,3*4*5,4*5*6,5*6*7>>, "failed to zip product");
-
-
-    static_assert(reverse_boolean<false>::value              == 0, "failed to reverse boolean");
-    static_assert(reverse_boolean< true>::value              == 1, "failed to reverse boolean");
-    static_assert(reverse_boolean<false, false, true>::value == 4, "failed to reverse boolean");
-    static_assert(reverse_boolean<false,  true, true>::value == 6, "failed to reverse boolean");
-    static_assert(reverse_boolean<true,   true, true>::value == 7, "failed to reverse boolean");
-    static_assert(reverse_boolean<false, false, true, true>::value == 12, "failed to reverse boolean");
-
 }
