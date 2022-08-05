@@ -40,6 +40,7 @@ void test_template_meta()
 
     static_assert(max_subseq_sum<-10,-10,4,-10,-10,8,-10,-10>::value == 8);
     static_assert(max_subseq_sum<-10,-10,4,4,1,-10,8,-10,-10>::value == 9);
+    static_assert(max_subseq_sum<-10,-10,4,4,1,-1,5,-10,8,-10,-10>::value == 13);
 
     static_assert(reverse_boolean<false>::value              == 0, "failed to reverse boolean");
     static_assert(reverse_boolean< true>::value              == 1, "failed to reverse boolean");
