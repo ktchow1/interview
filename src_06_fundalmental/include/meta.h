@@ -3,26 +3,26 @@
 
 
 template<std::uint32_t N, std::uint32_t M>
-constexpr bool less_than() 
+consteval bool less_than() 
 {
     return N<M;
 }
 
 template<std::uint32_t N, std::uint32_t M>
-constexpr std::uint32_t abs_diff() 
+consteval std::uint32_t abs_diff() 
 {
-    if (less_than<N,M>()) return M-N; // if constexpr is optional here ...
+    if (less_than<N,M>()) return M-N; // if consteval is optional here ...
     else return N-M;
 }
 
 template<std::uint32_t N, std::uint32_t M, typename std::enable_if<less_than<N,M>(), int>::type dummy = 0>
-constexpr std::uint32_t abs_diff2()
+consteval std::uint32_t abs_diff2()
 {
     return M-N;
 }
 
 template<std::uint32_t N, std::uint32_t M, typename std::enable_if<!less_than<N,M>(), int>::type dummy = 0>
-constexpr std::uint32_t abs_diff2()
+consteval std::uint32_t abs_diff2()
 {
     return N-M;
 };
@@ -35,14 +35,14 @@ constexpr std::uint32_t abs_diff2()
 // BUG : using signed integer so that it supports negative profit in max-profit-problem
 //
 template<std::int32_t N, std::int32_t M>
-constexpr std::int32_t min() 
+consteval std::int32_t min() 
 {
     if (N<M) return N;
     else return M;
 }
 
 template<std::int32_t N, std::int32_t M>
-constexpr std::int32_t max() 
+consteval std::int32_t max() 
 {
     if (N>=M) return N;
     else return M;
