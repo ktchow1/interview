@@ -21,6 +21,7 @@ void test_template();
 void test_template_index_sequence();
 void test_template_index_sequence_Maven();
 void test_template_tuple();
+void test_template_variadic();
 
 int main()
 {
@@ -43,6 +44,7 @@ int main()
     test_template_index_sequence();
     test_template_index_sequence_Maven();
     test_template_tuple();
+    test_template_variadic();
 
 /*    
     interview::test_citadel_matrix_spiral();
