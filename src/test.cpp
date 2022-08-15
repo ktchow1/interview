@@ -1,7 +1,6 @@
 #include<iostream>
 #include<interview.h>
 
-
 void test_arithmetics();
 void test_tree();
 void test_tree_variant();
@@ -22,6 +21,7 @@ void test_template_index_sequence();
 void test_template_index_sequence_Maven();
 void test_template_tuple();
 void test_template_variadic();
+
 
 int main()
 {
@@ -54,6 +54,7 @@ int main()
     interview::test_smarket_subseq_product();
     interview::test_smarket_point_puzzle();
     */
+
 
     std::cout << "\n\n\n";
     return 0;
