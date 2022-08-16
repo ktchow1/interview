@@ -25,7 +25,7 @@ void test_template_variadic();
 
 int main()
 {
-//  test_arithmetics();
+    test_arithmetics();
 //  test_tree();
 //  test_tree_variant();
     
@@ -39,12 +39,12 @@ int main()
 //  test_time_state_diagram();
 
 //  test_polymorphism();
-//
-    test_template();
-    test_template_index_sequence();
-    test_template_index_sequence_Maven();
-    test_template_tuple();
-    test_template_variadic();
+  
+//  test_template();
+//  test_template_index_sequence();
+//  test_template_index_sequence_Maven();
+//  test_template_tuple();
+//  test_template_variadic();
 
 /*    
     interview::test_citadel_matrix_spiral();

@@ -165,6 +165,7 @@ std::uint64_t power_with_multiplication(std::uint32_t x, std::uint32_t y)
 {
     if (y==0) return 1;
 
+    // First of all, convert y into bits array (Is this redundant?)
     std::uint32_t shift_2 = 1;
     while(shift_2 <= y) shift_2 = shift_2 << 1;
     shift_2 = shift_2 >> 1;
@@ -192,6 +193,21 @@ std::uint64_t power_with_multiplication(std::uint32_t x, std::uint32_t y)
     {
         if (bits.top()) z *= xx;
         bits.pop();
+        xx = xx * xx;
+    }
+    return z;
+}
+
+std::uint64_t power_with_multiplication_optimized(std::uint32_t x, std::uint32_t y)
+{
+    if (y==0) return 1;
+
+    std::uint64_t z  = 1;
+    std::uint64_t xx = x;
+    while(y>0)
+    {
+        if (y%2==1) z *= xx;
+        y=y>>1;
         xx = xx * xx;
     }
     return z;
@@ -269,7 +285,8 @@ void test_power_with_multiplication()
     {
         std::uint32_t x = rand()%15+1; 
         std::uint32_t y = rand()%30+1;
-        auto z = power_with_multiplication(x,y);
+//      auto z = power_with_multiplication(x,y);
+        auto z = power_with_multiplication_optimized(x,y);
         auto w = power_with_loop(x,y);
         std::cout << "\npower " << x << "^" << y << " = " << z << ", checking : " << w << (z==w? " correct": " incorrect");
     }
@@ -277,8 +294,8 @@ void test_power_with_multiplication()
 
 void test_arithmetics()
 {
-    test_bignum();
-    test_reverse_with_bit_shift();
-    test_divide_with_subtraction();
+//  test_bignum();
+//  test_reverse_with_bit_shift();
+//  test_divide_with_subtraction();
     test_power_with_multiplication();
 }
