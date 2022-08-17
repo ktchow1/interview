@@ -111,7 +111,7 @@ num_bool_parenthesis_iterative(const std::vector<bool_logic>::const_iterator& be
             std::uint32_t m=n+subdiag;
             mat(n,m).first  = 0;
             mat(n,m).second = 0;
-            for(std::uint32_t k=0; k!=m; ++k)
+            for(std::uint32_t k=n; k!=m; ++k)
             {
                 auto sub = merge_bool_parenthesis_subproblems((begin+k)->op, mat(n,k), mat(k+1,m));
                 mat(n,m).first  += sub.first;
@@ -582,8 +582,8 @@ void test_multi_link_subproblem()
 {
 //  test_nCr();
 //  test_bell_number();
-//  test_num_bool_parenthesis();
+    test_num_bool_parenthesis();
 //  test_coin_game();
-    test_box_stacking();
-    test_bin_packing();
+//  test_box_stacking();
+//  test_bin_packing();
 }

@@ -28,7 +28,7 @@ std::string longest_common_subseq(const std::string& lhs, const std::string& rhs
         {
             if (lhs[y]==rhs[x])
             {
-                mat(y,x) = std::max(mat(y-1,x-1)+1, std::max(mat(y-1,x), mat(y,x-1)));
+                mat(y,x) = mat(y-1,x-1)+1;
             }
             else
             {

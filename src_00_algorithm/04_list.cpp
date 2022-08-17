@@ -32,16 +32,14 @@ public:
     {
     }
 
-    // *** Implementation 1 *** //
     template<typename...ARGS>
-    void insert_front(ARGS&&...args) 
+    void insert_front(ARGS&&...args) // <--- we have thread-safe lockfree version for this one
     {
         node<T>* new_node = new node<T>{std::forward<ARGS>(args)...};
         new_node->next = head;
         head = new_node;
     }
 
-    // *** Implementation 2 *** //
     template<typename...ARGS>
     void insert_after(node<T>* this_node, ARGS&&...args) 
     {
@@ -70,7 +68,13 @@ public:
         }
     }
 
-    // *** Implementation *** //
+    void erase_front() 
+    {
+        node<T>* del_node = head;
+        head = del_node->next;
+        delete del_node;
+    }
+
     void erase_next(node<T>* this_node) 
     {
         node<T>* del_node = this_node->next;
@@ -83,9 +87,7 @@ public:
         // *** Special case *** //
         if (this_node == head)
         {
-            node<T>* del_node = head;
-            head = this_node->next;
-            delete del_node;
+            erase_front();
         }
         // *** Normal case *** //
         else

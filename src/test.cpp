@@ -25,7 +25,7 @@ void test_template_variadic();
 
 int main()
 {
-    test_arithmetics();
+//  test_arithmetics();
 //  test_tree();
 //  test_tree_variant();
     
@@ -35,7 +35,7 @@ int main()
 //  test_sorting_trick();
 
 //  test_singly_link_subproblem();
-//  test_multi_link_subproblem();
+    test_multi_link_subproblem();
 //  test_time_state_diagram();
 
 //  test_polymorphism();

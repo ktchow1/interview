@@ -34,20 +34,21 @@ std::int32_t max_subseq_product(const std::vector<std::int32_t>& vec)
     return ans;
 }
 
+// All elements in the sum must be non-contiguous.
 std::int32_t max_non_contiguous_subseq_sum(const std::vector<std::int32_t>& vec)
 {
     if (vec.size() < 1) return 0;
 
     std::int32_t msp0 = vec[0]; // include the last element  
-    std::int32_t msp1 = 1;      // enclude the last element  
+    std::int32_t msp1 = 0;      // enclude the last element  
     std::int32_t ans  = std::max(msp0, msp1);    
     for(std::uint32_t n=1; n!=vec.size(); ++n)
     {
         auto tmp0 = msp0;
         auto tmp1 = msp1;
-        msp0 = std::max(tmp0+vec[n], std::max(tmp1+vec[n], vec[n]));
+        msp0 = std::max(tmp1+vec[n], vec[n]);
         msp1 = std::max(tmp0, tmp1);
-        ans  = std::max(msp0, std::max(msp1, ans));
+        ans  = std::max(msp0, ans);
     }
     return ans;
 }
@@ -82,13 +83,13 @@ std::int32_t max_puzzle_game(const std::vector<std::int32_t>& vec)
             msp0 = std::max(tmp1+iter->first*iter->second, 
                                  iter->first*iter->second);
             msp1 = std::max(tmp0, tmp1); 
-            ans  = std::max(msp0, msp1);
+            ans  = std::max(msp0, ans);
         }
         else
         {
         //  msp0 = unchanged
             msp1 = std::max(tmp0, tmp1); 
-            ans  = std::max(msp0, msp1);
+        //  ans  = unchanged
         }
     }
     return ans;

@@ -5,7 +5,7 @@
 template<typename T>
 struct node
 {
-    T value;
+    T value; // replace with std::array<char, sizeof(T)> to avoid requiring T to be default constructible
     node<T>* next;
 };
 
@@ -85,9 +85,9 @@ public:
     {
         if (head)
         { 
-            node<T>* next_node = head->next;
-            pool.release(head);
-            head = next_node;
+            node<T>* del_node = head; 
+            head = head->next;
+            pool.release(del_node);
             return true;
         }
         return false;

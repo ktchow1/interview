@@ -264,7 +264,7 @@ std::optional<V> search(const node<V>* root, const std::string& key)
     const node<V>* this_node = root;
     std::uint32_t n=0; 
 
-    while(true) // this_node != nullptr (always)
+    while(true) // Todo : please change to for(const auto& c:key)
     {
         auto iter = this_node->impl.find(key[n]);
         if (iter != this_node->impl.end())
@@ -294,7 +294,7 @@ void insert(node<V>* root, const std::string& key, const V& value)
     node<V>* this_node = root; // BUG : you copy this line from search() above, forget to remove const, result in pages of errors
     std::uint32_t n=0; 
 
-    while(true) // this_node != nullptr (always)
+    while(true) // Todo : please change to for(const auto& c:key)
     {
         auto iter = this_node->impl.find(key[n]);
         if (iter != this_node->impl.end())
