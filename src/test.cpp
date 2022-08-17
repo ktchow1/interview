@@ -35,7 +35,7 @@ int main()
 //  test_sorting_trick();
 
 //  test_singly_link_subproblem();
-    test_multi_link_subproblem();
+//  test_multi_link_subproblem();
 //  test_time_state_diagram();
 
 //  test_polymorphism();
@@ -46,14 +46,13 @@ int main()
 //  test_template_tuple();
 //  test_template_variadic();
 
-/*    
-    interview::test_citadel_matrix_spiral();
-    interview::test_citadel_K_merge();
-    interview::test_epoch_state();
-    interview::test_optiver_tree_checker();
-    interview::test_smarket_subseq_product();
-    interview::test_smarket_point_puzzle();
-    */
+//  interview::test_citadel_matrix_spiral();
+//  interview::test_citadel_K_merge();
+//  interview::test_epoch_state();
+    interview::test_maven_runtime_template();
+//  interview::test_optiver_tree_checker();
+//  interview::test_smarket_subseq_product();
+//  interview::test_smarket_point_puzzle();
 
 
     std::cout << "\n\n\n";

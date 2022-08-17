@@ -373,7 +373,7 @@ std::uint32_t box_stacking_iterative(const std::vector<box>::const_iterator& beg
     for(auto iter=begin; iter!=end; ++iter) // iterate in time domain
     {
         std::map<base, std::uint32_t> status0;
-        euler_update(status0, iter->x, iter->y, iter->z);
+        euler_update(status0, iter->x, iter->y, iter->z); // Todo : move this part to the beginning with zero base and zero height, more readable 
         euler_update(status0, iter->y, iter->z, iter->x);
         euler_update(status0, iter->z, iter->x, iter->y);
         for(const auto& info:status) // iterate in state domain
