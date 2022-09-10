@@ -21,9 +21,6 @@ template<std::uint32_t N> class derived : public base
 {
 };
 
-class dd : public base {};
-
-
 // ****************** //
 // *** Approach 1 *** //
 // ****************** //
@@ -87,7 +84,7 @@ public:
 // *** Wrong syntax *** //
 // ******************** //
 template<typename B, template<std::uint32_t> typename D, std::uint32_t...Ns>
-class factory2
+class factory_fail
 {
 public:
     static std::unique_ptr<B> create(std::uint32_t n)
@@ -98,14 +95,14 @@ public:
 
 /*
 template<typename B, template<std::uint32_t> typename D, std::uint32_t N, std::uint32_t...Ns>
-std::unique_ptr<B> factory2<B,D,N,Ns...>::create(std::uint32_t n)
+std::unique_ptr<B> factory_fail<B,D,N,Ns...>::create(std::uint32_t n)
 {
     if (n==N) return std::unique_ptr<base>(new D<N>{});
-    else return factory2<B,D,Ns...>::create(n);
+    else return factory_fail<B,D,Ns...>::create(n);
 }
 
 template<typename B, template<std::uint32_t> typename D>
-std::unique_ptr<B> factory2<B,D>::create(std::uint32_t n)
+std::unique_ptr<B> factory_fail<B,D>::create(std::uint32_t n)
 {
     return nullptr;
 } 
