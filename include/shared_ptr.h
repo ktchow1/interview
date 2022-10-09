@@ -1,14 +1,8 @@
 #pragma once
 
-// ******************************************************************************* //
-// *** Re-design of shared_ptr (after Wintermute 2nd round technical interview *** //
-// ******************************************************************************* //
-//
-// Resource pointer should be indirectly under class shared_ptr<T>.
-// Manager should not contain resource pointer, as it needs 2 redirections.
-// Manager should     contain deleter.
-// Deleter can be any type, hence we need type-erasure pattern. Stackoverflow 6324694
-// ******************************************************************************* //
+// **************************************** //
+// *** Preliminary design of shared_ptr *** //
+// **************************************** //
 template<typename T> 
 class shared_ptr
 {	

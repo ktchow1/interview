@@ -1,20 +1,32 @@
 #pragma once
 
-// ******************************************************************************* //
-// *** Re-design of shared_ptr (after Wintermute 2nd round technical interview *** //
-// ******************************************************************************* //
+// ******************************* //
+// *** Re-design of shared_ptr *** //
+// ******************************* //
+// Wintermute 2nd round technical interview : 
+// - Resource pointer should be indirectly under class shared_ptr<T>.
+// - Manager should not contain resource pointer, as it needs 2 redirections.
+// - Manager should     contain deleter.
+// - Deleter can be any type, we need type-erasure pattern. Stackoverflow 6324694.
 //
-// Resource pointer should be indirectly under class shared_ptr<T>.
-// Manager should not contain resource pointer, as it needs 2 redirections.
-// Manager should     contain deleter.
-// Deleter can be any type, hence we need type-erasure pattern. Stackoverflow 6324694
-// // ******************************************************************************* //
+// 3 main changes are made, as stated in step 1-3 below.
+// 3 new / delete operations are involved (as opposed to 2 in original design) :
+// - new resource
+// - new deleter
+// - new manager
+// 
+// Type T and U are : 
+// - T is pointer type 
+// - U is physical type
+// - T and U must fulfill concept std::assignment_from<T,U>
+// - T and U are not necessary derived from same base, but have common interface, which is destructor in this case
+//
+
 template<typename T> 
 class shared_ptr_with_deleter
 {	
 private:
-    // Step 1 : Introduce deleter_base, deleter<T> and add deleter_base* to manager
-    //          this is called the "Type erasure" pattern
+    // Step 1 : Introduce deleter_base, deleter<T> and deleter_base*, called "type-erasure" pattern
     //
     struct deleter_base
     {
@@ -42,9 +54,7 @@ private:
     };
 
 public:
-    // Step 2 : Make constructor a template member, with parameter U,
-    //          as lond as concept std::assignment_from<T,U> is fulfilled,
-    //          i.e. T is pointer type, while U is physical type
+    // Step 2 : Make constructor as template with parameter U, put the right type inside type-erasure
     //
     template<typename U>
     explicit shared_ptr_with_deleter(U* ptr = nullptr) : manager_ptr(nullptr), resource_ptr(nullptr)
@@ -118,11 +128,9 @@ private:
             --(manager_ptr->count);
             if (manager_ptr->count == 0)
             {
-                // Step 3 : Delete resource using deleter, 
-                //          instead of default ~T. 
-                //          3 delete operations involved (instead of 2)
+                // Step 3 : Delete resource using deleter, instead of default ~T. 
                 //
-             (*(manager_ptr->deleter_ptr))(resource_ptr);
+                (*(manager_ptr->deleter_ptr))(resource_ptr);
                 delete manager_ptr->deleter_ptr;
                 delete manager_ptr;	
                 manager_ptr = nullptr;

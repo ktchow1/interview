@@ -3,7 +3,7 @@
 #include<shared_ptr.h> 
 #include<shared_ptr_with_deleter.h> 
 
-// *************************************************************** //
+// ******************************************************************** //
 // This is the reason why rejected by windermute :
 // 
 // For std::shared_ptr, no matter whether ~A is declared virtual or not, 
@@ -11,7 +11,7 @@
 //
 // For my shared_ptr, we need to declare ~A virtual, 
 // otherwise it prints ~A without printing ~B. WHY ?
-// *************************************************************** //
+// ******************************************************************** //
 namespace interview {
 class A
 {
