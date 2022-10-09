@@ -1,0 +1,138 @@
+#pragma once
+
+// ******************************************************************************* //
+// *** Re-design of shared_ptr (after Wintermute 2nd round technical interview *** //
+// ******************************************************************************* //
+//
+// Resource pointer should be indirectly under class shared_ptr<T>.
+// Manager should not contain resource pointer, as it needs 2 redirections.
+// Manager should     contain deleter.
+// Deleter can be any type, hence we need type-erasure pattern. Stackoverflow 6324694
+// // ******************************************************************************* //
+template<typename T> 
+class shared_ptr_with_deleter
+{	
+private:
+    // Step 1 : Introduce deleter_base, deleter<T> and add deleter_base* to manager
+    //          this is called the "Type erasure" pattern
+    //
+    struct deleter_base
+    {
+        virtual ~deleter_base() {}
+        virtual void operator()(void*) = 0;
+    };
+
+    template<typename U>
+    struct deleter : public deleter_base
+    {
+        virtual void operator()(void* ptr)
+        {
+            delete static_cast<U*>(ptr);
+        }
+    };
+
+    struct manager
+    {
+        manager(std::uint32_t n, deleter_base* dptr) : count(n), deleter_ptr(dptr)
+        {
+        }
+
+        std::uint32_t count;
+        deleter_base* deleter_ptr;
+    };
+
+public:
+    // Step 2 : Make constructor a template member, with parameter U,
+    //          as lond as concept std::assignment_from<T,U> is fulfilled,
+    //          i.e. T is pointer type, while U is physical type
+    //
+    template<typename U>
+    explicit shared_ptr_with_deleter(U* ptr = nullptr) : manager_ptr(nullptr), resource_ptr(nullptr)
+    {
+        if (ptr)
+        {
+            manager_ptr = new manager(1, new deleter<U>());
+            resource_ptr = ptr;
+        }
+    }												
+										
+    ~shared_ptr_with_deleter()
+    {
+        decrement();
+    }
+                                    
+    shared_ptr_with_deleter(shared_ptr_with_deleter<T>& rhs) 	
+    {
+        manager_ptr = rhs.manager_ptr;
+        resource_ptr = rhs.resource_ptr;
+        increment();
+    }
+
+    shared_ptr_with_deleter<T>& operator=(shared_ptr_with_deleter<T>& rhs)
+    {
+        decrement();
+        manager_ptr = rhs.manager_ptr;
+        resource_ptr = rhs.resource_ptr;
+        increment();
+        return *this;
+    }
+
+    shared_ptr_with_deleter(shared_ptr_with_deleter<T>&& rhs) 
+    {
+        manager_ptr = rhs.manager_ptr;
+        resource_ptr = rhs.resource_ptr;
+        rhs.manager_ptr = nullptr;
+        rhs.resource_ptr = nullptr;
+    }	
+
+    shared_ptr_with_deleter<T>& operator=(shared_ptr_with_deleter<T>&& rhs)
+    {
+        decrement();
+        manager_ptr = rhs.manager_ptr;
+        resource_ptr = rhs.resource_ptr;
+        rhs.manager_ptr = nullptr;
+        rhs.resource_ptr = nullptr;
+        return *this;
+    }
+
+    std::uint32_t ref_count() const { return  (manager_ptr? manager_ptr->count:0); }
+    operator bool()           const { return (resource_ptr!=nullptr); }
+    const T& operator *()     const { return *resource_ptr;  }
+    const T* operator->()     const { return  resource_ptr;  }
+    T& operator *()                 { return *resource_ptr;  }
+    T* operator->()                 { return  resource_ptr;  }
+
+private:    
+    void increment()
+    {
+        if (manager_ptr)
+        {
+            ++(manager_ptr->count); 
+        }
+    }
+
+    void decrement()
+    {	
+        if (manager_ptr && manager_ptr->count > 0)
+        {
+            --(manager_ptr->count);
+            if (manager_ptr->count == 0)
+            {
+                // Step 3 : Delete resource using deleter, 
+                //          instead of default ~T. 
+                //          3 delete operations involved (instead of 2)
+                //
+             (*(manager_ptr->deleter_ptr))(resource_ptr);
+                delete manager_ptr->deleter_ptr;
+                delete manager_ptr;	
+                manager_ptr = nullptr;
+                resource_ptr = nullptr;
+            }		
+        }
+    }
+
+private:    
+    manager* manager_ptr;
+    T*       resource_ptr;
+};
+ 

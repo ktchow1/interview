@@ -46,14 +46,18 @@ int main()
 //  test_template_tuple();
 //  test_template_variadic();
 
+//  interview::test_apt3();
+//  interview::test_apt4();
+//  interview::test_apt5();
 //  interview::test_citadel_matrix_spiral();
 //  interview::test_citadel_K_merge();
+//  interview::test_citadel_max_rook_sum();
 //  interview::test_epoch_state();
-    interview::test_maven_runtime_template();
+//  interview::test_maven_runtime_template();
 //  interview::test_optiver_tree_checker();
 //  interview::test_smarket_subseq_product();
 //  interview::test_smarket_point_puzzle();
-
+    interview::test_wintermute_shared_ptr();
 
     std::cout << "\n\n\n";
     return 0;
