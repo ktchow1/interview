@@ -2,6 +2,7 @@
 #include<memory>
 #include<shared_ptr.h> 
 #include<shared_ptr_with_deleter.h> 
+#include<type_erasure.h> 
 
 // ******************************************************************** //
 // This is the reason why rejected by windermute :
@@ -98,5 +99,9 @@ void test_wintermute_shared_ptr()
         shared_ptr_with_deleter<A> p1(new B(123));
         std::cout << "\n----- out of scope -----";
     }
+
+    std::cout << "\n";
+    test::test_type_erasure();
+
 }
 }

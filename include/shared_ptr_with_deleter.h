@@ -17,11 +17,13 @@
 // 
 // Type T and U are : 
 // - T is pointer type 
-// - U is physical type
+// - U is physical type, i.e. the type erased
 // - T and U must fulfill concept std::assignment_from<T,U>
 // - T and U are not necessary derived from same base, but have common interface, which is destructor in this case
 //
-
+// Manager must be non-template, which housekeeps a non-template deleter_base pointer.
+// Manager must have a template constructor, which allows construction from different types.
+//
 template<typename T> 
 class shared_ptr_with_deleter
 {	
@@ -45,7 +47,8 @@ private:
 
     struct manager
     {
-        manager(std::uint32_t n, deleter_base* dptr) : count(n), deleter_ptr(dptr)
+        template<typename U>
+        manager(std::uint32_t n, [[maybe_unused]] U* ptr) : count(n), deleter_ptr(new deleter<U>{})
         {
         }
 
@@ -61,7 +64,7 @@ public:
     {
         if (ptr)
         {
-            manager_ptr = new manager(1, new deleter<U>());
+            manager_ptr = new manager(1, ptr);
             resource_ptr = ptr;
         }
     }												
