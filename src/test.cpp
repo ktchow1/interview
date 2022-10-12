@@ -46,6 +46,8 @@ int main()
 //  test_template_tuple();
 //  test_template_variadic();
 
+    interview::test_alphagrep_count_k_odd_subseq(); 
+    interview::test_alphagrep_count_step_function();
 //  interview::test_apt3();
 //  interview::test_apt4();
 //  interview::test_apt5();
@@ -57,7 +59,7 @@ int main()
 //  interview::test_optiver_tree_checker();
 //  interview::test_smarket_subseq_product();
 //  interview::test_smarket_point_puzzle();
-    interview::test_wintermute_shared_ptr();
+//  interview::test_wintermute_shared_ptr();
 
     std::cout << "\n\n\n";
     return 0;

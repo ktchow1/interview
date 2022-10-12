@@ -1,6 +1,7 @@
 #pragma once
 #include<memory>
 #include<string>
+#include<vector>
 
 // ***************** //
 // *** Objective *** //
@@ -14,7 +15,10 @@
 //
 // Remark # : no these parts in shared_ptr_with_deleter
 //
-class type_erase0
+// **************************************** //
+// *** Type erasure for member-function *** //
+// **************************************** //
+class type_erase_memfct
 {
     class object_base
     {
@@ -45,7 +49,7 @@ private:
 
 public:
     template<typename U>
-    type_erase0(U&& targeted_object) : base_ptr(new object_wrapper<U>(std::forward<U>(targeted_object)))
+    type_erase_memfct(U&& targeted_object) : base_ptr(new object_wrapper<U>(std::forward<U>(targeted_object)))
     {
     }
     
@@ -55,7 +59,10 @@ public:
     }
 };
 
-class type_erase1
+// ******************************** //
+// *** Type erasure for functor *** //
+// ******************************** //
+class type_erase_functor
 {
     class object_base
     {
@@ -74,7 +81,7 @@ class type_erase1
 
         std::uint32_t shared_interface(const std::string& str) const override
         {
-            return _object(str); // Main difference between type_erase0 and type_erase1
+            return _object(str); // Main difference between type_erase_memfct and type_erase_functor
         }
 
     private:
@@ -86,7 +93,7 @@ private:
 
 public:
     template<typename U>
-    type_erase1(U&& targeted_object) : base_ptr(new object_wrapper<U>(std::forward<U>(targeted_object)))
+    type_erase_functor(U&& targeted_object) : base_ptr(new object_wrapper<U>(std::forward<U>(targeted_object)))
     {
     }
     
@@ -96,12 +103,12 @@ public:
     }
 };
 
-inline void invoke_shared_interface(const type_erase0& any)
+inline void invoke_shared_interface(const type_erase_memfct& any)
 {
     any.shared_interface("hello world");
 }
 
-inline void invoke_shared_interface(const type_erase1& any)
+inline void invoke_shared_interface(const type_erase_functor& any)
 {
     any.shared_interface("byebye");
 }
@@ -111,8 +118,8 @@ class A
 {
 public: 
     A(std::uint32_t x, std::uint32_t y) : _x(x), _y(y) {}
-    inline std::uint32_t function  (const std::string& str) const { std::cout << "\nA::function "   << str; return 0; }
-    inline std::uint32_t operator()(const std::string& str) const { std::cout << "\nA::operator() " << str; return 0; }
+    inline std::uint32_t function  (const std::string& str) const { std::cout << "\n" << str << " A::function";   return 0; }
+    inline std::uint32_t operator()(const std::string& str) const { std::cout << "\n" << str << " A::operator()"; return 0; }
 
 private:
     std::uint32_t _x;
@@ -123,8 +130,8 @@ class B
 {
 public: 
     B(std::uint32_t x, std::uint32_t y, std::uint32_t z) : _x(x), _y(y), _z(z) {}
-    inline std::uint32_t function  (const std::string& str) const { std::cout << "\nB::function "   << str; return 0; }
-    inline std::uint32_t operator()(const std::string& str) const { std::cout << "\nB::operator() " << str; return 0; }
+    inline std::uint32_t function  (const std::string& str) const { std::cout << "\n" << str << " B::function";   return 0; }
+    inline std::uint32_t operator()(const std::string& str) const { std::cout << "\n" << str << " B::operator()"; return 0; }
 
 private:
     std::uint32_t _x;
@@ -134,21 +141,35 @@ private:
 
 inline std::uint32_t f(const std::string& str)
 {
-    std::cout << "\nglobal f " << str;
+    std::cout << "\n" << str << " global f";
     return 123;
 }
 
 inline void test_type_erasure()
 {
-    invoke_shared_interface(type_erase0(A{1,2}));
-    invoke_shared_interface(type_erase0(B{1,2,3}));
-    invoke_shared_interface(type_erase1(A{1,2}));
-    invoke_shared_interface(type_erase1(B{1,2,3}));
-    invoke_shared_interface(type_erase1(f));
-    invoke_shared_interface(type_erase1(+[](const std::string& str)
+    invoke_shared_interface(type_erase_memfct(A{1,2}));
+    invoke_shared_interface(type_erase_memfct(B{1,2,3}));
+    invoke_shared_interface(type_erase_functor(A{1,2}));
+    invoke_shared_interface(type_erase_functor(B{1,2,3}));
+    invoke_shared_interface(type_erase_functor(f));
+    invoke_shared_interface(type_erase_functor(+[](const std::string& str)
     {
-        std::cout << "\nlamba prefixed with + " << str; return 0; 
+        std::cout << "\n" << str << " lamba prefixed with +"; return 0; 
     }));
+
+
+    std::vector<type_erase_functor> vec;
+    vec.push_back(type_erase_functor(A{1,2}));
+    vec.push_back(type_erase_functor(B{1,2,3}));
+    vec.push_back(type_erase_functor(f));
+    vec.push_back(type_erase_functor(+[](const std::string& str)
+    {
+        std::cout << "\n" << str << " lamba prefixed with +"; return 0; 
+    }));
+    for(const auto& x:vec)
+    {
+        invoke_shared_interface(x);
+    }
 }
 }
 
