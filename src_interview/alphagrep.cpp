@@ -1,7 +1,158 @@
 #include<iostream>
+#include<iomanip>
 #include<vector>
+#include<iterator>
 
 
+// ****************** //
+// *** Question 1 *** //
+// ****************** //
+// Given vector of sorted integers, find max-min diff of non-contiguous subset of size k : 
+// where k is given and programmable
+//
+// Ideas : 
+// * as numbers are sorted in set, vec[0] and vec[vec.size()-1] must be selected, only need to pick the rest k-2 numbers
+// * as numbers are sorted in subset, only difference between two adjacent elements in subset are considered
+// * so it is like the piecewise linear regression problem in dynprog
+//
+// Given N = vec.size() :
+// 
+// max_min_diff(vec[0,N-1],k) = std::max( std::min( max_min_diff(vec[0,k-2],k-1), max_min_diff(vec[k-2,N-1]],2) ),
+//                                        std::min( max_min_diff(vec[0,k-1],k-1), max_min_diff(vec[k-1,N-1]],2) ),
+//                                        std::min( max_min_diff(vec[0,k-0],k-1), max_min_diff(vec[k-0,N-1]],2) ),
+//                                        std::min( max_min_diff(vec[0,k+1],k-1), max_min_diff(vec[k+1,N-1]],2) ),
+//                                        ...
+//                                        std::min( max_min_diff(vec[0,N-2],k-1), max_min_diff(vec[N-2,N-1]],2) ))
+//
+// math notation : vec[i,j]    includes both vec[i] and vec[j]
+// prog notation : [begin,end) includes begin, excludes end
+//
+// recursive implementation is O(N!), why? Assume it is f(N), then f(N) = (N-1)*f(N-1) = N!
+// iterative implementation is O(N^3)
+//
+namespace interview {
+std::uint32_t max_min_diff_in_subset_recursive(const std::vector<std::uint32_t>::const_iterator& begin,
+                                               const std::vector<std::uint32_t>::const_iterator& end,
+                                               const std::uint32_t k)
+{
+    std::uint32_t N = std::distance(begin, end);
+
+    // *** Boundary case *** //
+    if (N==0) return 0;
+    if (N==1) return 0;
+    if (N>=2 && k==2)
+    {
+        return *(end-1) - *begin;
+    }
+
+    // *** Recursion *** //
+    std::uint32_t max_min = 0;
+    for(auto iter=begin+(k-2); iter!=begin+(N-1); ++iter)
+    {
+        auto subproblem0 = max_min_diff_in_subset_recursive(begin, iter+1, k-1);
+        auto subproblem1 = max_min_diff_in_subset_recursive(iter, end, 2);
+        auto subproblem  = std::min(subproblem0, subproblem1);
+        max_min = std::max(max_min, subproblem);
+    }
+    return max_min;
+}
+
+std::uint32_t max_min_diff_in_subset_recursive(const std::vector<std::uint32_t>& vec, const std::uint32_t k)
+{
+    return max_min_diff_in_subset_recursive(vec.begin(), vec.end(), k);
+}
+
+template<typename T>
+class matrix
+{
+public:
+    matrix(std::uint32_t y, std::uint32_t x) : size_y(y), size_x(x), impl(y*x,0)
+    {
+    }
+
+    const T& operator()(std::uint32_t y, std::uint32_t x) const noexcept
+    {
+        return impl[y*size_x+x];
+    }
+
+    T& operator()(std::uint32_t y, std::uint32_t x) noexcept
+    {
+        return impl[y*size_x+x];
+    }
+    
+    void debug() const noexcept
+    {
+        std::cout << "\nmat";
+        for(std::uint32_t y=0; y!=size_y; ++y)
+        {
+            std::cout << "\n|";
+            for(std::uint32_t x=0; x!=size_x; ++x)
+            {
+                std::cout << std::setw(3) << impl[y*size_x+x] << " ";
+            }
+            std::cout << "|";
+        }
+    }
+
+private:
+    std::uint32_t  size_y;
+    std::uint32_t  size_x;
+    std::vector<T> impl;
+};
+
+std::uint32_t max_min_diff_in_subset_iterative(const std::vector<std::uint32_t>& vec, const std::uint32_t k)
+{
+    // n = vector size
+    // m = subset size
+    // mat(n,m) = subproblem with vec[0,n-1] and subset size m 
+    // mat(:,0) = no use
+    // mat(:,1) = no use
+    // mat(0,:) = no use
+    // mat(1,:) = no use
+    //
+    // mat looks like this, where cell A depends on all cells B :
+    // ...........           ...........
+    // ...........           ...........
+    // ..*........           ..*........
+    // ..**.......           ..**.......
+    // ..***......  --->     ..***......
+    // ..****.....           ..****.....
+    // ..*****....           ..**B**....
+    // ..******...           ..**BA**...
+    // ..*******..           ..**B****..
+    // ..********.           ..**B*****.
+    // ..*********           ..*********
+    //
+    matrix<std::uint32_t> mat(vec.size()+1, k+1); // size is 1 bigger than last index
+
+    // *** Boundary case *** //
+    for(std::uint32_t n=2; n<=vec.size(); ++n)
+    {
+        mat(n,2) = vec[n-1]-vec[0];
+    }
+
+    // *** Iteration *** //
+    for(std::uint32_t m=3; m<=k; ++m)
+    {
+        for(std::uint32_t n=m; n<=vec.size(); ++n)
+        {
+            mat(n,m) = 0;
+            for(std::uint32_t n0=m-1; n0<n; ++n0)
+            {
+                auto subproblem0 = mat(n0, m-1);    
+                auto subproblem1 = vec[n-1] - vec[n0-1];  
+                auto subproblem  = std::min(subproblem0, subproblem1); 
+                mat(n,m) = std::max(mat(n,m), subproblem);
+            }
+
+            // *** Debug *** //
+        //  mat.debug();
+        }
+    }
+
+    return mat(vec.size(), k);
+}
+}
 
 // ****************** //
 // *** Question 2 *** //
@@ -165,8 +316,46 @@ std::uint32_t count_step_funcion(std::string& str)
 // *************** //
 // *** Testing *** //
 // *************** //
-
 namespace interview {
+template<typename T>
+std::ostream& operator<<(std::ostream& os, const std::vector<T>& vec)
+{
+    os << "[";
+    for(const auto& x:vec) os << x << ", ";
+    os << "]";
+    return os;
+}
+
+std::vector<std::uint32_t> random_sorted_int_vector(std::uint32_t size)
+{
+    std::vector<std::uint32_t> output;
+    for(std::uint32_t n=0; n!=size; ++n)
+    {
+        output.push_back(rand()%200); 
+    }
+    std::sort(output.begin(), output.end());
+    return output;
+}
+
+void test_alphagrep_max_min_diff_in_subset()
+{
+    std::cout << "\n\nAlphagrep : max min diff in subset";
+    std::uint32_t num_error = 0;
+    for(std::uint32_t n=0; n!=500; ++n) 
+    {
+        std::uint32_t subset_size = 3 + rand()%6;
+        auto vec = random_sorted_int_vector(20+rand()%20);
+        std::uint32_t count0 = max_min_diff_in_subset_recursive(vec, subset_size); 
+        std::uint32_t count1 = max_min_diff_in_subset_iterative(vec, subset_size); 
+        if (count0 != count1) ++num_error;
+
+        std::cout << "\ntest " << n << " " << vec
+                  << ", count0 = " << count0 
+                  << ", count1 = " << count1 
+                  << ", error = " << num_error << "/" << n+1;
+    }
+}
+
 std::vector<std::uint32_t> random_int_vector(std::uint32_t size)
 {
     std::vector<std::uint32_t> output;
