@@ -226,7 +226,7 @@ std::uint32_t count_k_odd_subseq_exhaustive(const std::vector<std::uint32_t>& ve
 //      where  n0  <   n1  <   n2
 // 
 // * integers are unsorted
-// * integers may duplicated
+// * integers may duplicated (however the version that I get on web is non-duplicated)
 // * identical subsequences are counted as one
 //
 // Ideas :
@@ -239,10 +239,27 @@ std::uint32_t count_k_odd_subseq_exhaustive(const std::vector<std::uint32_t>& ve
 //   then look for bigger v[n2] on RHS
 //
 namespace interview {
-std::uint32_t count_decreasing_triplet(const std::vector<std::uint32_t>& vec)
+
+// This approach does not support duplicated int.
+std::uint32_t count_decreasing_triplet(const std::vector<std::uint32_t>& vec) 
 {
     std::uint32_t count=0;
+    for(std::uint32_t n=1; n!=vec.size()-1; ++n)
+    {
+        std::uint32_t num_larger_on_LHS=0;
+        for(std::uint32_t m=0; m!=n; ++m)
+        {
+            if (vec[m] > vec[n]) ++num_larger_on_LHS;
+        }
 
+        std::uint32_t num_smaller_on_RHS=0;
+        for(std::uint32_t m=n+1; m!=vec.size(); ++m)
+        {
+            if (vec[m] < vec[n]) ++num_smaller_on_RHS;
+        }
+
+        count += num_larger_on_LHS * num_smaller_on_RHS;
+    }
     return count;
 }
 }
@@ -364,6 +381,24 @@ std::vector<std::uint32_t> random_int_vector(std::uint32_t size)
         output.push_back(rand()%100);
     }
     return output;
+}
+
+void test_alphagrep_count_decreasing_triplet() 
+{
+    std::cout << "\n\nAlphagrep : count decreasing triplet";
+    std::uint32_t num_error = 0;
+    for(std::uint32_t n=0; n!=500; ++n)
+    {
+        auto vec = random_int_vector(40+rand()%40);
+        std::uint32_t count0 = count_decreasing_triplet(vec);
+        std::uint32_t count1 = count0; 
+        if (count0 != count1) ++num_error;
+
+        std::cout << "\ntest " << n 
+                  << ", count0 = " << count0 
+                  << ", count1 = " << count1 
+                  << ", error = " << num_error << "/" << n+1;
+    }
 }
 
 void test_alphagrep_count_k_odd_subseq()    

@@ -8,6 +8,7 @@ namespace interview
 {
     void test_alphagrep_max_min_diff_in_subset();
     void test_alphagrep_count_k_odd_subseq();
+    void test_alphagrep_count_decreasing_triplet();
     void test_alphagrep_count_step_function();
     void test_apt3();
     void test_apt4();

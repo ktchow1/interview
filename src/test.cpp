@@ -46,8 +46,9 @@ int main()
 //  test_template_tuple();
 //  test_template_variadic();
 
-    interview::test_alphagrep_max_min_diff_in_subset();
+//  interview::test_alphagrep_max_min_diff_in_subset();
 //  interview::test_alphagrep_count_k_odd_subseq(); 
+    interview::test_alphagrep_count_decreasing_triplet();
 //  interview::test_alphagrep_count_step_function();
 //  interview::test_apt3();
 //  interview::test_apt4();
