@@ -13,6 +13,7 @@ namespace interview
     void test_apt3();
     void test_apt4();
     void test_apt5();
+    void test_archax_min_missing_pos_num();
     void test_citadel_matrix_spiral();
     void test_citadel_K_merge();
     void test_citadel_max_rook_sum();

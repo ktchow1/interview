@@ -48,11 +48,12 @@ int main()
 
 //  interview::test_alphagrep_max_min_diff_in_subset();
 //  interview::test_alphagrep_count_k_odd_subseq(); 
-    interview::test_alphagrep_count_decreasing_triplet();
+//  interview::test_alphagrep_count_decreasing_triplet();
 //  interview::test_alphagrep_count_step_function();
 //  interview::test_apt3();
 //  interview::test_apt4();
 //  interview::test_apt5();
+    interview::test_archax_min_missing_pos_num();
 //  interview::test_citadel_matrix_spiral();
 //  interview::test_citadel_K_merge();
 //  interview::test_citadel_max_rook_sum();
