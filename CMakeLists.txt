@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.18.2)
 project(interview)
 
 
-set(CMAKE_C_COMPILER /usr/bin/gcc-10)
-set(CMAKE_CXX_COMPILER /usr/bin/g++-10)
+set(CMAKE_C_COMPILER /usr/bin/gcc)
+set(CMAKE_CXX_COMPILER /usr/bin/g++)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -24,8 +24,8 @@ endif()
 ###################
 include_directories(
     include 
-    src_06_fundalmental/include 
-    /mnt/d/dev/boost_1_72_0 
+    src_05_template/include 
+    /mnt/d/dev/cpp_dependency/boost_1_84_0 
 )
 
 ##################
@@ -33,13 +33,11 @@ include_directories(
 ##################
 file(GLOB SOURCES
      "src/*.cpp"
-     "src_00_algorithm/*.cpp"
-     "src_01_dynprog_vec/*.cpp"
-     "src_02_dynprog/*.cpp"
-     "src_03_fundalmental/*.cpp"
-     "src_04_rvalue/*.cpp"
-     "src_05_type_deduction/*.cpp"
-     "src_06_fundalmental/*.cpp"
+     "src_01_algorithm/*.cpp"
+     "src_02_dynprog_vec/*.cpp"
+     "src_03_dynprog/*.cpp"
+     "src_04_fundalmental/*.cpp"
+     "src_05_template/*.cpp"
      "src_interview/*.cpp"
 )
 add_executable(Test ${SOURCES})       # for building executable
